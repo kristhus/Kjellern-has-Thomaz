@@ -21,19 +21,18 @@ public class LeftPanel extends JPanel {
 		c.gridy = 0;
 		c.weighty = 0.1;
 		c.anchor = GridBagConstraints.NORTHWEST;
-		add(new ListItem(null, "SkarszTest"), c);
+		add(new ListItem(null, "GifLoader", "gif"), c);
 		c.gridy ++;
-		add(new ListItem(null, "SkarszTest2"), c);
+		add(new ListItem(null, "SkarszTest2", ""), c);
 		c.gridy ++;
-		add(new ListItem(null, "SkarszTest3"), c);
+		add(new ListItem(null, "SkarszTest3", ""), c);
 				c.gridy ++;
-		add(new ListItem(null, "SkarszTest4"), c);
+		add(new ListItem(null, "SkarszTest4", ""), c);
 				c.gridy ++;
-		add(new ListItem(null, "SkarszTest5"), c);
+		add(new ListItem(null, "SkarszTest5", ""), c);
 				c.gridy ++;
-		add(new ListItem(null, "SkarszTest6"), c);
-	
-		
+		add(new ListItem(null, "SkarszTest6", ""), c);
 	}
+	
 	
 }
