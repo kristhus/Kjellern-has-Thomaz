@@ -14,10 +14,12 @@ public class ListItem extends JPanel implements MouseListener{
 	public String pathName;
 	public String title;
 	public JLabel label;
+	public String actionCommand;
 	
-	public ListItem (String pathName, String title) {
+	public ListItem (String pathName, String title, String actionCommand) {
 		this.pathName = pathName;
 		this.title = title;
+		this.actionCommand = actionCommand;
 		createLabel();
 		revalidate();
 		setBackground(Color.white);
@@ -33,8 +35,8 @@ public class ListItem extends JPanel implements MouseListener{
 	
 	
 	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		// Perform action relevant to the item selected		
+		MainFrame.getRightPanel().decide(actionCommand);
 	}
 
 	public void mouseEntered(MouseEvent arg0) {
@@ -55,12 +57,12 @@ public class ListItem extends JPanel implements MouseListener{
 	}
 
 	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		// TODO Create bevel effect
 		
 	}
 
 	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		// TODO Remove bevel effect
 		
 	}
 
