@@ -4,6 +4,8 @@ import interfaces.Drawable;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,9 +33,20 @@ public class ColorChooser extends JPanel implements Drawable {
 		gSlider.setMaximum(255);
 		bSlider.setMaximum(255);
 		
-		add(rSlider);
-		add(gSlider);
-		add(bSlider);
+		
+		GridBagLayout gbl = new GridBagLayout();
+		setLayout(gbl);
+		GridBagConstraints c = new GridBagConstraints();
+		c.weighty = 1;
+		c.gridy= 0;
+		c.anchor = GridBagConstraints.NORTH;
+		
+		add(rSlider, c);
+		c.gridy++;
+		add(gSlider, c);
+		c.gridy++;
+		add(bSlider, c);
+		repaint();
 	}
 	
 	
@@ -51,9 +64,9 @@ public class ColorChooser extends JPanel implements Drawable {
 	@Override
 	public void draw(Graphics g) {
 		 super.paintComponent(g);
-	     g.drawRect(230,80,50,50);  
+	     g.drawRect(230,50,50,50);  
 	     g.setColor(new Color(rSlider.getValue(), gSlider.getValue(), bSlider.getValue()));  
-	     g.fillRect(230,80,50,50);  
+	     g.fillRect(230,50,50,50);  
 	}
 
 }
