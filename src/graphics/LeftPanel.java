@@ -32,6 +32,9 @@ public class LeftPanel extends JPanel {
 		add(new ListItem(null, "SkarszTest5", ""), c);
 				c.gridy ++;
 		add(new ListItem(null, "SkarszTest6", ""), c);
+		
+		c.gridy++;
+		add(new ListItem(null, "Movable", "move"), c);
 	}
 	
 	

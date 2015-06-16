@@ -7,6 +7,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import moveable.Player;
+
 public class RightPanel extends JPanel{
 
 	
@@ -26,6 +28,11 @@ public class RightPanel extends JPanel{
 			add(gifLabel);
 			revalidate();
 		}
+	}
+
+	public void add(Player player) {
+		// TODO Auto-generated method stub
+		add(player);
 	}
 	
 }
