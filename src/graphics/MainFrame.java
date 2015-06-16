@@ -1,10 +1,12 @@
 package graphics;
 
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.Window;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -14,6 +16,7 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
+import data.Updater;
 import reader.Reader;
 
 public class MainFrame extends JFrame{
@@ -21,9 +24,13 @@ public class MainFrame extends JFrame{
 	public static MainFrame mainFrame;
 	public static JSplitPane mainPanel;
 	public static Reader reader;
+	public static Updater updater;
 	
 	public static void main(String args[]) {
 		mainFrame = new MainFrame();
+		reader = new Reader();
+		updater = new Updater();
+		updater.calculateFPS();
 	}
 	
 	public MainFrame() {
@@ -63,7 +70,15 @@ public class MainFrame extends JFrame{
 		pack();
 		revalidate();
 		
-		reader = new Reader();
+
+	}
+	
+	public static void draw(Graphics g) {
+		getRightPanel().draw(g);
+	}
+	
+	public static void update(long dt) {
+		
 	}
 	
 	public static Reader getReader() {
@@ -75,6 +90,16 @@ public class MainFrame extends JFrame{
 	}
 	public static LeftPanel getLeftPanel() {
 		return (LeftPanel) mainPanel.getLeftComponent();
+	}
+
+	public static MainFrame getmainFrame() {
+		// TODO Auto-generated method stub
+		return mainFrame;
+	}
+
+	public static JComponent getMainPanel() {
+		// TODO Auto-generated method stub
+		return mainPanel;
 	}
 	
 }

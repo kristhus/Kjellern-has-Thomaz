@@ -37,6 +37,7 @@ public class ListItem extends JPanel implements MouseListener{
 	public void mouseClicked(MouseEvent arg0) {
 		// Perform action relevant to the item selected		
 		MainFrame.getRightPanel().decide(actionCommand);
+		MainFrame.getMainPanel().revalidate();
 	}
 
 	public void mouseEntered(MouseEvent arg0) {
