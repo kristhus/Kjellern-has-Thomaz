@@ -5,6 +5,7 @@ import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.beans.PropertyVetoException;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -36,6 +37,10 @@ public class ListItem extends JPanel implements MouseListener{
 	
 	public void mouseClicked(MouseEvent arg0) {
 		// Perform action relevant to the item selected		
+		if(MainFrame.getRightPanel().isClosed()) {
+				MainFrame.getRightPanel().setVisible(true);
+				MainFrame.getRightPanel().setBounds(150,0,600,600);
+		}
 		MainFrame.getRightPanel().decide(actionCommand);
 		MainFrame.getMainPanel().revalidate();
 	}

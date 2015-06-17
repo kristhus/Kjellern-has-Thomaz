@@ -6,7 +6,7 @@ public class Updater {
 
 	public void calculateFPS() { 
 	long beginTime; //Time when the cycle begins
-        long timeDiff;  // Time it took for the cycle to execute
+        long timeDiff = 0;  // Time it took for the cycle to execute
         int sleepTime = 0; // ms to sleep (<0 if we're behind)
         int framesSkipped; //Number of frames being skipped
 		
@@ -18,7 +18,7 @@ public class Updater {
 				framesSkipped = 0;
 				
 				//RUN UPDATE ON TOP CLASS
-				//	MainFrame.update(timeDiff);
+					MainFrame.update(timeDiff);
 				
 				//RUN DRAW ON TOP CLASS
 				MainFrame.draw(MainFrame.getmainFrame().getGraphics());
@@ -40,6 +40,7 @@ public class Updater {
                         //updates without rendering
                         //INSERT UPDATE ON TOP CLASS
 						timeDiff = System.currentTimeMillis() - beginTime;
+						MainFrame.update(timeDiff);
 				//		MainFrame.update(timeDiff);
                         //add frame period to check if in next frame
                         sleepTime += 1000/FPS;
