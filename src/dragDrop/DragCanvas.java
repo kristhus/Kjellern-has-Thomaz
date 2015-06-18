@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import listeners.KeyBoardListener;
+
 public class DragCanvas extends JPanel implements MouseMotionListener, MouseListener, Drawable{
 	
 	private int mouseX;
@@ -55,7 +57,6 @@ public class DragCanvas extends JPanel implements MouseMotionListener, MouseList
 		
 		addMouseMotionListener(this);
 		addMouseListener(this);
-		
 	}
 
 	@Override

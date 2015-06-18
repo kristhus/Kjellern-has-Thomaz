@@ -1,5 +1,8 @@
 package moveable;
 
+import graphics.MainFrame;
+import interfaces.Drawable;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -11,7 +14,7 @@ import javax.swing.JPanel;
 
 
 
-public class Player extends JPanel implements Collidable, KeyListener   {
+public class Player extends JPanel implements Collidable, Drawable   {
 
 	
 	private Shape bounds;
@@ -23,11 +26,6 @@ public class Player extends JPanel implements Collidable, KeyListener   {
 	private int dY;
 	private int velocityX;
 	private int velocityY;
-	private boolean keyDown;
-	private boolean keyLeftPressed; 
-	private boolean keyUpPressed;
-	private boolean keyRightPressed;
-	private boolean keyDownPressed;
 	
 	public Player(int height, int width, int posX, int posY, int velocityX, int velocityY ){
 		
@@ -38,6 +36,8 @@ public class Player extends JPanel implements Collidable, KeyListener   {
 		this.posY = posY;
 		this.velocityX = velocityX;
 		this.velocityY = velocityY;
+		dX = velocityX;
+		dY = velocityY;
 		
 	}
 	
@@ -49,63 +49,37 @@ public class Player extends JPanel implements Collidable, KeyListener   {
 	
 	
 	public void draw(Graphics g){
+		g=getGraphics();
+		paint(g);
 		g.drawRect(posX, posY, width, height);
 		g.fillRect(posX, posY, width, height);
 		g.setColor(Color.BLACK);
 		
-		
 	}
 	
 
-	public void update(long dt){						// deltaTime
-		if(keyLeftPressed || keyRightPressed || keyDownPressed || keyUpPressed) {
-			posX += dX;
-			posY += dY;
+	public void update(long dt){		
+		// deltaTime
+		boolean keyLeftPressed, keyRightPressed, keyDownPressed, keyUpPressed;
+		keyLeftPressed = MainFrame.getKeyBoardListener().isKeyLeftPressed();
+		keyRightPressed = MainFrame.getKeyBoardListener().isKeyRightPressed();
+		keyDownPressed = MainFrame.getKeyBoardListener().isKeyDownPressed();
+		keyUpPressed = MainFrame.getKeyBoardListener().isKeyUpPressed();
+		if(keyLeftPressed) {
+			posX-=dX;
 		}
+		if(keyRightPressed)
+			posX+=dX;
+		if(keyDownPressed)
+			posY+=dY;
+		if(keyUpPressed)
+			posY-=dY;
 		
 		
 		
 	}
 
 
-	@Override
-	public void keyPressed(KeyEvent e) {
-
-		keyDown = true; 
-		
-		switch(e.getKeyCode()){
-		case KeyEvent.VK_LEFT:
-			dX= -velocityX;
-			 break;
-		case KeyEvent.VK_UP:
-			dY = -velocityY;
-			 break;
-		case KeyEvent.VK_RIGHT:
-			dX = velocityX;
-			 break;
-		case KeyEvent.VK_DOWN:
-			dX = velocityY;
-			 break;
-		}
-		
-		
-	}
-
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		
-		keyDown = true; 
-	}
-
-
-	@Override
-	public void keyTyped(KeyEvent e) {
-
-		
-		
-		
-	}
 	
 	
 	
