@@ -22,6 +22,8 @@ import javax.swing.JRootPane;
 import javax.swing.JWindow;
 import javax.swing.SpringLayout;
 
+import moveable.Player;
+
 import dragDrop.DragAndDrop;
 import dragDrop.DragCanvas;
 import ParticleEngine.ColorChooser;
@@ -93,8 +95,7 @@ public class RightPanel extends JInternalFrame {
 		}
 		repaint();
 	}
-	
-	
+
 	public void draw(Graphics g) {
 		internalPane.draw(g);
 	}
@@ -105,6 +106,11 @@ public class RightPanel extends JInternalFrame {
 	public ColorChooser getColorChooser() {
 		// TODO Auto-generated method stub
 		return colorChooser;
+	}
+
+	public void add(Player player) {
+		// TODO Auto-generated method stub
+		add(player);
 	}
 	
 	
@@ -128,6 +134,5 @@ public class RightPanel extends JInternalFrame {
 		}
 		
 	}
-	
-	
+
 }
