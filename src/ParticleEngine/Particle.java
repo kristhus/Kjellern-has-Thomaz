@@ -59,13 +59,13 @@ public class Particle extends Rectangle{
 			if(randomDirection) {
 				double tmpdirx = (Math.random()*velocity); 
 				double tmpdiry = (Math.random()*velocity); 
-				deltaX = -(Math.random()*velocity)- Math.random(); 
-				deltaY = -(Math.random()*velocity)- Math.random();
+				deltaX = -(Math.random()*velocity); 
+				deltaY = -(Math.random()*velocity);
 				if((int)(Math.random()*2) == 1) {
-					deltaX= tmpdirx + Math.random();
+					deltaX= tmpdirx;
 				}
 				if((int)(Math.random()*2) == 1) {
-					deltaY= tmpdiry + Math.random();
+					deltaY= tmpdiry;
 				}
 			}
 			deltaX += Math.random();

@@ -32,8 +32,8 @@ public class ParticleCluster {
 		this.particlesPerSecond = particlesPerSecond;
 		this.caller = caller;
 		particlesPerUpdate =  (float) particlesPerSecond /MainFrame.FPS;
-		System.out.println(particlesPerUpdate);
-		lifetime = (particleLimit/particlesPerSecond);
+		lifetime = (particleLimit/particlesPerSecond)*1000;
+		System.out.println(lifetime);
 
 	}
 	
@@ -54,16 +54,20 @@ public class ParticleCluster {
 			if(MainFrame.getRightPanel().getColorChooser().isSeedOn()){
 				p = seeded();				
 			}else {
-				p = new Particle(1, 1, null, MainFrame.getRightPanel().getColorChooser().getColor(), caller.mouseX, caller.mouseY, true, Particle.FLAME);
+				p = new Particle(2, 2, null, MainFrame.getRightPanel().getColorChooser().getColor(), caller.mouseX, caller.mouseY, true, Particle.FLAME);
 			}
 			particles.add(p); 
 			cycles ++;
 		}
+		
+		// FIX THIS PART    Add initialSpeed for drag and release effect???
 		ArrayList<Particle> tmpParticles = new ArrayList<Particle>();
 		for(Particle p : particles) {
 			p.update(dt);
-			if(p.life < lifetime) {
+			if(p.life < lifetime-dt) {
 				tmpParticles.add(p);
+			}else {
+				p = null;
 			}
 		}
 		particles = tmpParticles;
