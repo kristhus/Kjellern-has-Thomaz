@@ -12,6 +12,9 @@ public class Reader {
 	
 	//Delete resources when not needed (use recycling, and null objects to reallocate mem)
 	
+	// All settings should be accessed from this class through some kind of readable file
+	// 		These settings include simple stuff like isSeedOn, various color options etc. 
+	
 	public BufferedImage readImage(String path) {
 		BufferedImage img = null;
 		try {
