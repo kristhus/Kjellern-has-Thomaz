@@ -83,11 +83,7 @@ public class RightPanel extends JInternalFrame {
 		internalPane.draw(g);
 	}
 	public void update(long dt) {
-			for(Component c : getComponents()) {
-				if(c instanceof Drawable) {
-					((Drawable) c).update(dt);
-				}
-		}
+			internalPane.update(dt);
 	}
 
 	public ColorChooser getColorChooser() {
