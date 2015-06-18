@@ -29,17 +29,16 @@ public class ParticleCanvas extends JPanel implements Drawable, MouseMotionListe
 	public ParticleCanvas() {
 		
 		
-		cluster = new ParticleCluster(100, 1, this);
+		cluster = new ParticleCluster(100000, 30000, this);
 		
 		BorderLayout bl = new BorderLayout();
 		setLayout(bl);
-		setPreferredSize(new Dimension(300, 300));
+		setPreferredSize(new Dimension(600, 600));
 		setLocation(300,300);
-		setBackground(Color.white);
+		setBackground(Color.black);
 		setVisible(true);
 		addMouseMotionListener(this);
 		addMouseListener(this);
-		
 	}
 
 	public void draw(Graphics g) {
@@ -65,6 +64,8 @@ public class ParticleCanvas extends JPanel implements Drawable, MouseMotionListe
 		mouseY = arg0.getY();
 	}
 
+
+	
 	@Override
 	public void mouseMoved(MouseEvent arg0) {
 		// TODO Auto-generated method stub

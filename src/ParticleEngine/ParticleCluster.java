@@ -19,6 +19,8 @@ public class ParticleCluster {
 	private int particlesPerSecond;
 	private long deltaSecond;
 	private ArrayList<Particle> particles;
+	private float particlesPerUpdate;
+	private float lifetime;
 	
 	private ParticleCanvas caller;
 	
@@ -29,6 +31,9 @@ public class ParticleCluster {
 		this.particleLimit = particleLimit;
 		this.particlesPerSecond = particlesPerSecond;
 		this.caller = caller;
+		particlesPerUpdate =  (float) particlesPerSecond /MainFrame.FPS;
+		System.out.println(particlesPerUpdate);
+		lifetime = (particleLimit/particlesPerSecond);
 
 	}
 	
@@ -42,26 +47,17 @@ public class ParticleCluster {
 	}
 
 	public void update(long dt) {
-		
-		float lifetime = (particleLimit/particlesPerSecond);
-		deltaSecond += dt;
-		if(deltaSecond > 20) 
-			deltaSecond = dt;
-		while( particles.size() < particleLimit && caller.mouseDown){// && particlesPerSecond < deltaSecond) { SWAP WHILE with it to remove burst
+		int cycles = 1;
+
+		while( particles.size() < particleLimit && caller.mouseDown && cycles <= particlesPerUpdate){// && particlesPerSecond < deltaSecond) { SWAP WHILE with it to remove burst
 			Particle p;
 			if(MainFrame.getRightPanel().getColorChooser().isSeedOn()){
 				p = seeded();				
 			}else {
-				p = new Particle(5, 5, null, MainFrame.getRightPanel().getColorChooser().getColor(), caller.mouseX, caller.mouseY, true);
+				p = new Particle(1, 1, null, MainFrame.getRightPanel().getColorChooser().getColor(), caller.mouseX, caller.mouseY, true, Particle.FLAME);
 			}
 			particles.add(p); 
-		}
-		if(particles.size() >= particleLimit) {
-			particles.remove(0);
-		}
-		for(Particle p : particles) {
-			if(p.life >= lifetime)
-				particles.remove(p);
+			cycles ++;
 		}
 		ArrayList<Particle> tmpParticles = new ArrayList<Particle>();
 		for(Particle p : particles) {

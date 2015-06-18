@@ -99,6 +99,8 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 		// TODO Auto-generated method stub
 		if(arg0.getStateChange() == ItemEvent.SELECTED) {
 			seedOn = true;
+		} else {
+			seedOn = false;
 		}
 	}
 	
