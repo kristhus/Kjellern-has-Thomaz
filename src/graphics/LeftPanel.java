@@ -27,6 +27,8 @@ public class LeftPanel extends JInternalFrame {
 		c.gridy ++;
 		canvas.add(new ListItem(null, "Particles", "particles"), c);
 		c.gridy ++;
+		c.gridy ++;
+		canvas.add(new ListItem(null, "Click & Drag", "Drag&Drop"), c);
 
 		setBounds(0, 0, 150, 800);
 		setVisible(true);

@@ -6,6 +6,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -20,6 +22,8 @@ import javax.swing.JRootPane;
 import javax.swing.JWindow;
 import javax.swing.SpringLayout;
 
+import dragDrop.DragAndDrop;
+import dragDrop.DragCanvas;
 import ParticleEngine.ColorChooser;
 
 public class RightPanel extends JInternalFrame {
@@ -40,6 +44,8 @@ public class RightPanel extends JInternalFrame {
 		setVisible(true);
 		setClosable(true);
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
+		setMaximizable(true);
+		
 		internalPane = new InternalPanel();
 		internalPane.setBackground(Color.red);
 		internalPane.setVisible(true);
@@ -63,6 +69,7 @@ public class RightPanel extends JInternalFrame {
 			drawableComponents = false;
 			break;
 		case "particles":
+			/**
 			drawableComponents = true;
 			colorChooser = new ColorChooser();
 			internalPane.add(colorChooser);
@@ -72,7 +79,17 @@ public class RightPanel extends JInternalFrame {
 			((SpringLayout) internalPane.getLayout()).putConstraint(SpringLayout.WEST, colorChooser, 5, SpringLayout.WEST, internalPane);
 			((SpringLayout) internalPane.getLayout()).putConstraint(SpringLayout.NORTH, pc, 5, SpringLayout.SOUTH, colorChooser);
 			((SpringLayout) internalPane.getLayout()).putConstraint(SpringLayout.WEST, pc, 5, SpringLayout.WEST, internalPane);
+			break;
+			*/
+		case "Drag&Drop": 
+			BorderLayout bl = new BorderLayout();
+			internalPane.setLayout(bl);
+			internalPane.add(new DragCanvas(), BorderLayout.CENTER);
+			drawableComponents = true;
 			
+			break;
+		case "":
+			System.err.println("When creating a listitem, an action command must be added as well!");
 			break;
 		}
 		repaint();
