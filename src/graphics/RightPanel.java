@@ -8,6 +8,8 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -23,12 +25,11 @@ import javax.swing.JWindow;
 import javax.swing.SpringLayout;
 
 import moveable.Player;
-
 import dragDrop.DragAndDrop;
 import dragDrop.DragCanvas;
 import ParticleEngine.ColorChooser;
 
-public class RightPanel extends JInternalFrame {
+public class RightPanel extends JInternalFrame{
 
 	private boolean drawableComponents;
 	
@@ -92,6 +93,13 @@ public class RightPanel extends JInternalFrame {
 		case "":
 			System.err.println("When creating a listitem, an action command must be added as well!");
 			break;
+		
+		case "move":
+			Player player = new Player(10,10,0,0,1,1);
+			internalPane.add(player);
+			drawableComponents = true;
+			break;
+			
 		}
 		repaint();
 	}
@@ -107,15 +115,10 @@ public class RightPanel extends JInternalFrame {
 		// TODO Auto-generated method stub
 		return colorChooser;
 	}
+	
 
-	public void add(Player player) {
-		// TODO Auto-generated method stub
-		add(player);
-	}
-	
-	
 	private class InternalPanel extends JPanel implements Drawable{
-
+		
 		@Override
 		public void draw(Graphics g) {
 			// TODO Auto-generated method stub
@@ -127,8 +130,8 @@ public class RightPanel extends JInternalFrame {
 		}
 		public void update(long dt) {
 			for(Component c : getComponents()) {
-				if(c instanceof ParticleCanvas) {
-					((ParticleCanvas)c).update (dt);
+				if(c instanceof Drawable) {
+					((Drawable)c).update (dt);
 				}
 			}
 		}

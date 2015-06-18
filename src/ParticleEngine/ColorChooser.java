@@ -29,7 +29,6 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 	
 	private JCheckBox seedsOn;
 
-	private ParticleCluster cluster;
 
 	private boolean mouseDown;
 	private boolean seedOn;
@@ -50,7 +49,6 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 		rSlider.setMaximum(255);
 		gSlider.setMaximum(255);
 		bSlider.setMaximum(255);
-		
 		
 		GridBagLayout gbl = new GridBagLayout();
 		setLayout(gbl);
@@ -85,7 +83,6 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 	}
 	
 	public void update(long dt) {
-		cluster.update(dt);
 	}
 
 

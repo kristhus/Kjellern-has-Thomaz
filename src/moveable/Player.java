@@ -1,5 +1,7 @@
 package moveable;
 
+import interfaces.Drawable;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -11,7 +13,7 @@ import javax.swing.JPanel;
 
 
 
-public class Player extends JPanel implements Collidable, KeyListener   {
+public class Player extends JPanel implements Collidable, Drawable   {
 
 	
 	private Shape bounds;
@@ -49,15 +51,16 @@ public class Player extends JPanel implements Collidable, KeyListener   {
 	
 	
 	public void draw(Graphics g){
+		g=getGraphics();
 		g.drawRect(posX, posY, width, height);
 		g.fillRect(posX, posY, width, height);
 		g.setColor(Color.BLACK);
 		
-		
 	}
 	
 
-	public void update(long dt){						// deltaTime
+	public void update(long dt){		
+		// deltaTime
 		if(keyLeftPressed || keyRightPressed || keyDownPressed || keyUpPressed) {
 			posX += dX;
 			posY += dY;
@@ -68,44 +71,6 @@ public class Player extends JPanel implements Collidable, KeyListener   {
 	}
 
 
-	@Override
-	public void keyPressed(KeyEvent e) {
-
-		keyDown = true; 
-		
-		switch(e.getKeyCode()){
-		case KeyEvent.VK_LEFT:
-			dX= -velocityX;
-			 break;
-		case KeyEvent.VK_UP:
-			dY = -velocityY;
-			 break;
-		case KeyEvent.VK_RIGHT:
-			dX = velocityX;
-			 break;
-		case KeyEvent.VK_DOWN:
-			dX = velocityY;
-			 break;
-		}
-		
-		
-	}
-
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		
-		keyDown = true; 
-	}
-
-
-	@Override
-	public void keyTyped(KeyEvent e) {
-
-		
-		
-		
-	}
 	
 	
 	
