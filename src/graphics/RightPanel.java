@@ -68,6 +68,7 @@ public class RightPanel extends JInternalFrame{
 		internalPane.removeAll();
 		BorderLayout bl = new BorderLayout();
 		internalPane.setLayout(bl);
+		internalPane.requestFocus();
 		switch(actionCommand) {
 		case "gif":
 			ImageIcon gif = MainFrame.getReader().readGif("/gifs/ajax-loader.gif");
@@ -101,7 +102,6 @@ public class RightPanel extends JInternalFrame{
 			Player player = new Player(10,10,0,0,5,5);
 			internalPane.add(player);
 			drawableComponents = true;
-			internalPane.requestFocus();
 			break;
 			
 		}
