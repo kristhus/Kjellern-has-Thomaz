@@ -57,7 +57,6 @@ public class DragCanvas extends JPanel implements MouseMotionListener, MouseList
 		
 		addMouseMotionListener(this);
 		addMouseListener(this);
-		addKeyListener(new KeyBoardListener());
 	}
 
 	@Override

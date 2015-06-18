@@ -24,6 +24,7 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.DesktopPaneUI;
 
+import listeners.KeyBoardListener;
 import data.Updater;
 import reader.Reader;
 
@@ -36,6 +37,7 @@ public class MainFrame extends JFrame{
 	
 	private static final boolean DEV_MODE = false;
 	private static boolean DEV_MODE_INITIALIZED = false;
+	private static KeyBoardListener keyBoardListener;
 	
 	public static LeftPanel leftPanel;
 	public static RightPanel rightPanel;
@@ -82,6 +84,8 @@ public class MainFrame extends JFrame{
 		JFrame.setDefaultLookAndFeelDecorated(true);
 	//	mainFrame.setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("")));  //Need an icon
 		setVisible(true);
+		keyBoardListener = new KeyBoardListener();
+		addKeyListener(keyBoardListener);
 		mainPanel = new JDesktopPane();
 		mainPanel.setOpaque(true);       
         mainPanel.setFocusable(true);
@@ -90,7 +94,6 @@ public class MainFrame extends JFrame{
         rightPanel = new RightPanel();
         mainPanel.add(leftPanel, new Integer(1));
         mainPanel.add(rightPanel, new Integer(1));
-		
 		pack();
 		revalidate();
         
@@ -134,15 +137,15 @@ public class MainFrame extends JFrame{
 	}
 
 	public static MainFrame getmainFrame() {
-		// TODO Auto-generated method stub
 		return mainFrame;
 	}
 
 	public static JComponent getMainPanel() {
-		// TODO Auto-generated method stub
 		return mainPanel;
 	}
 	
-	
+	public static KeyBoardListener getKeyBoardListener(){
+		return keyBoardListener;
+	}
 	
 }

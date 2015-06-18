@@ -24,6 +24,7 @@ import javax.swing.JRootPane;
 import javax.swing.JWindow;
 import javax.swing.SpringLayout;
 
+import listeners.KeyBoardListener;
 import moveable.Player;
 import dragDrop.DragAndDrop;
 import dragDrop.DragCanvas;
@@ -58,6 +59,7 @@ public class RightPanel extends JInternalFrame{
 		internalPane.setLayout(spl);
 		//temp.setBounds(0, 0, 200, 200);
 		add(internalPane);
+		addKeyListener(MainFrame.getKeyBoardListener());
 		
 	}
 	
