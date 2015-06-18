@@ -52,6 +52,7 @@ public class MainFrame extends JFrame{
 	
 	public MainFrame() {
 		// SPLASH SCREEN  TODO: Add loading sequence
+		super();
 		JWindow window = new JWindow();
 		window.getContentPane().add(new JLabel("", new ImageIcon(getClass().getResource("/splash.png")), SwingConstants.CENTER));
 		window.setBounds(Toolkit.getDefaultToolkit().getScreenSize().width/2-200, Toolkit.getDefaultToolkit().getScreenSize().height/2-100, 400, 200);
@@ -87,6 +88,7 @@ public class MainFrame extends JFrame{
 		keyBoardListener = new KeyBoardListener();
 		addKeyListener(keyBoardListener);
 		mainPanel = new JDesktopPane();
+		mainPanel.addKeyListener(MainFrame.getKeyBoardListener());
 		mainPanel.setOpaque(true);       
         mainPanel.setFocusable(true);
         add(mainPanel);
@@ -97,7 +99,6 @@ public class MainFrame extends JFrame{
 		pack();
 		revalidate();
         
-
 		CreateMenu cm = new CreateMenu();
 		setJMenuBar(cm.createMenu());
 	}

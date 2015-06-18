@@ -11,12 +11,8 @@ public class KeyBoardListener implements KeyListener {
 	private boolean keyRightPressed;
 	private boolean keyDownPressed;
 
-	public KeyBoardListener(){
-		System.out.println("PENIS");
-	}
 	
 	public void keyPressed(KeyEvent e) {
-		
 		System.out.println("PRESSED A KEY MOFO");
 		keyDown = true; 
 		switch(e.getKeyCode()){
@@ -36,15 +32,25 @@ public class KeyBoardListener implements KeyListener {
 		
 	}
 
-	@Override
 	public void keyReleased(KeyEvent e) {
-		
-		keyLeftPressed = keyUpPressed = keyRightPressed = keyDownPressed = false;
 		keyDown = false; 
+		switch(e.getKeyCode()){
+		case KeyEvent.VK_LEFT:
+			keyLeftPressed = false;
+			 break;
+		case KeyEvent.VK_UP:
+			keyUpPressed = false;
+			 break;
+		case KeyEvent.VK_RIGHT:
+			keyRightPressed = false;
+			 break;
+		case KeyEvent.VK_DOWN:
+			keyDownPressed = false;
+			 break;
+		}
 		
 	}
 
-	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
 		

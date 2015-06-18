@@ -1,5 +1,6 @@
 package moveable;
 
+import graphics.MainFrame;
 import interfaces.Drawable;
 
 import java.awt.Color;
@@ -25,11 +26,6 @@ public class Player extends JPanel implements Collidable, Drawable   {
 	private int dY;
 	private int velocityX;
 	private int velocityY;
-	private boolean keyDown;
-	private boolean keyLeftPressed; 
-	private boolean keyUpPressed;
-	private boolean keyRightPressed;
-	private boolean keyDownPressed;
 	
 	public Player(int height, int width, int posX, int posY, int velocityX, int velocityY ){
 		
@@ -40,6 +36,8 @@ public class Player extends JPanel implements Collidable, Drawable   {
 		this.posY = posY;
 		this.velocityX = velocityX;
 		this.velocityY = velocityY;
+		dX = velocityX;
+		dY = velocityY;
 		
 	}
 	
@@ -52,6 +50,7 @@ public class Player extends JPanel implements Collidable, Drawable   {
 	
 	public void draw(Graphics g){
 		g=getGraphics();
+		paint(g);
 		g.drawRect(posX, posY, width, height);
 		g.fillRect(posX, posY, width, height);
 		g.setColor(Color.BLACK);
@@ -61,10 +60,20 @@ public class Player extends JPanel implements Collidable, Drawable   {
 
 	public void update(long dt){		
 		// deltaTime
-		if(keyLeftPressed || keyRightPressed || keyDownPressed || keyUpPressed) {
-			posX += dX;
-			posY += dY;
+		boolean keyLeftPressed, keyRightPressed, keyDownPressed, keyUpPressed;
+		keyLeftPressed = MainFrame.getKeyBoardListener().isKeyLeftPressed();
+		keyRightPressed = MainFrame.getKeyBoardListener().isKeyRightPressed();
+		keyDownPressed = MainFrame.getKeyBoardListener().isKeyDownPressed();
+		keyUpPressed = MainFrame.getKeyBoardListener().isKeyUpPressed();
+		if(keyLeftPressed) {
+			posX-=dX;
 		}
+		if(keyRightPressed)
+			posX+=dX;
+		if(keyDownPressed)
+			posY+=dY;
+		if(keyUpPressed)
+			posY-=dY;
 		
 		
 		

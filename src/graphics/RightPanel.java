@@ -59,7 +59,8 @@ public class RightPanel extends JInternalFrame{
 		internalPane.setLayout(spl);
 		//temp.setBounds(0, 0, 200, 200);
 		add(internalPane);
-		addKeyListener(MainFrame.getKeyBoardListener());
+		
+		internalPane.addKeyListener(MainFrame.getKeyBoardListener());
 		
 	}
 	
@@ -97,9 +98,10 @@ public class RightPanel extends JInternalFrame{
 			break;
 		
 		case "move":
-			Player player = new Player(10,10,0,0,1,1);
+			Player player = new Player(10,10,0,0,5,5);
 			internalPane.add(player);
 			drawableComponents = true;
+			internalPane.requestFocus();
 			break;
 			
 		}
