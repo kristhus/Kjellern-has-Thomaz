@@ -25,23 +25,34 @@ public class DragCanvas extends JPanel implements MouseMotionListener, MouseList
 	
 	private DragAndDrop box;
 	
-	private ArrayList<DragAndDrop> selectedComponents;
+	private ArrayList<DragAndDrop> selectedComponents; //TODO: Multiselection?
 	private ArrayList<DragAndDrop> availableComponents;
 	
 	public DragCanvas() {
 		setBackground(Color.black);
 		setVisible(true);
-		box = new DragAndDrop(DragAndDrop.AQUATIC);
-		box.setVisible(true);
-		box.setPreferredSize(new Dimension(70,70));
+		DragAndDrop tmp = new DragAndDrop(DragAndDrop.AQUATIC);
+		tmp.setVisible(true);
+		tmp.setPreferredSize(new Dimension(70,70));
 		
 		JTextField tf = new JTextField("DragMe");
 		tf.setEnabled(false);
-		box.add(tf);
-		add(box);
+		tmp.add(tf);
+		add(tmp);
+		
+		DragAndDrop tmp2 = new DragAndDrop(DragAndDrop.DEFAULT);
+		tmp2.setVisible(true);
+		tmp2.setPreferredSize(new Dimension(70,70));
+		tf = new JTextField("Box");
+		tf.setEnabled(false);
+		tmp2.add(tf);
+		add(tmp2);
+		
 		
 		availableComponents = new ArrayList<DragAndDrop>();
-		availableComponents.add(box);
+		availableComponents.add(tmp);
+		availableComponents.add(tmp2);
+		
 		addMouseMotionListener(this);
 		addMouseListener(this);
 		
@@ -50,11 +61,13 @@ public class DragCanvas extends JPanel implements MouseMotionListener, MouseList
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		if(box.intersects(arg0.getPoint())){
-			System.out.println("Clicked box");
-			box.setSelected(true);
-		}else {
-			box.setSelected(false);
+		for(DragAndDrop dad : availableComponents) {
+			if(dad.intersects(arg0.getPoint())){
+				System.out.println("Clicked box");
+				dad.setSelected(true);
+			}else {
+				dad.setSelected(false);
+			}
 		}
 	}
 
@@ -73,10 +86,12 @@ public class DragCanvas extends JPanel implements MouseMotionListener, MouseList
 	@Override
 	public void mousePressed(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		if(box.intersects(arg0.getPoint())){
-			box.setSelected(true);
+		for(DragAndDrop dad : availableComponents) {
+		if(dad.intersects(arg0.getPoint())){
+			dad.setSelected(true);
 		}else {
-			box.setSelected(false);
+			dad.setSelected(false);
+		}
 		}
 	}
 
@@ -84,8 +99,10 @@ public class DragCanvas extends JPanel implements MouseMotionListener, MouseList
 	public void mouseReleased(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		//box.setSelected(false);
-		if(box.intersects(arg0.getPoint())){
-			box.setHover(true);
+		for(DragAndDrop dad : availableComponents) {
+		if(dad.intersects(arg0.getPoint())){
+			dad.setHover(true);
+		}
 		}
 	}
 
@@ -94,17 +111,24 @@ public class DragCanvas extends JPanel implements MouseMotionListener, MouseList
 		// TODO Auto-generated method stub
 		mouseX = arg0.getX();
 		mouseY = arg0.getY();
-		if(box.isSelected())
-			box.setLocation(mouseX-box.getWidth()/2, mouseY-box.getHeight()/2);
+		for(DragAndDrop dad : availableComponents) {
+			if(dad.isSelected())
+				for(int i = 0; i < availableComponents.size();i++)  {
+					if(!availableComponents.get(i).intersects(arg0.getPoint()))
+						dad.setLocation(mouseX-dad.getWidth()/2, mouseY-dad.getHeight()/2);
+				}
+		}
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		if(box.intersects(arg0.getPoint())){
-			box.setHover(true);
+		for(DragAndDrop dad : availableComponents) {
+		if(dad.intersects(arg0.getPoint())){
+			dad.setHover(true);
 		}else
-			box.setHover(false);
+			dad.setHover(false);
+		}
 	}
 
 	@Override
