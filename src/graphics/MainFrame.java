@@ -95,8 +95,8 @@ public class MainFrame extends JFrame{
 		revalidate();
         
 
-		CreateMenu cm = new CreateMenu();
-		setJMenuBar(cm.createMenu());
+//		CreateMenu cm = new CreateMenu();
+//		setJMenuBar(cm.createMenu());
 	}
 	
 	public static void draw(Graphics g) {
