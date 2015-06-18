@@ -67,7 +67,8 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 		add(gSlider, c);
 		c.gridy++;
 		add(bSlider, c);
-		repaint();
+		
+//		repaint();
 		
 
 	}
@@ -90,9 +91,9 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 
 	@Override
 	public void draw(Graphics g) {  
-		Graphics2D g2d = (Graphics2D) g.create();
+		Graphics2D g2d = (Graphics2D) getGraphics().create();
 	     g2d.setColor(new Color(rSlider.getValue(), gSlider.getValue(), bSlider.getValue()));  
-	     g2d.fillRect(350,40,50,50);  
+	     g2d.fillRect(200,40,50,50);  
 	}
 
 

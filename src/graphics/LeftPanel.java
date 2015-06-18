@@ -30,7 +30,7 @@ public class LeftPanel extends JInternalFrame {
 		c.gridy ++;
 		canvas.add(new ListItem(null, "Click & Drag", "Drag&Drop"), c);
 
-		setBounds(0, 0, 150, 800);
+		setBounds(0, 0, 150, 500);
 		setVisible(true);
 		setClosable(false);
 		add(canvas);

@@ -6,6 +6,8 @@ import java.awt.Rectangle;
 
 import javax.swing.ImageIcon;
 
+import constants.EnvironmentConstants;
+
 /**
 Particle				-Rect / Img(?) 
 MouseMotionListener ?
@@ -18,8 +20,8 @@ TerminalVelocity -- || --
 
 public class Particle extends Rectangle{
 
-	public int posX;
-	public int posY;
+	public double posX;
+	public double posY;
 	public int width;
 	public int height;
 	public double deltaX; //SpeedModifier
@@ -27,7 +29,7 @@ public class Particle extends Rectangle{
 	public float velocity = 5; //MaxSpeed
 	public int opacity = 255;
 	public int deltaOpacity = 9; //(multiplum of 5, 3 or 17)
-	
+	private boolean gravity;
 	public long life;
 	
 	public Color color;
@@ -45,10 +47,10 @@ public class Particle extends Rectangle{
 			
 			//random direction
 			if(randomDirection) {
-				int tmpdirx = (int)(Math.random()*velocity); 
-				int tmpdiry = (int)(Math.random()*velocity); 
-				deltaX = -(int)(Math.random()*velocity)- Math.random();; 
-				deltaY = -(int)(Math.random()*velocity)- Math.random();;
+				double tmpdirx = (Math.random()*velocity); 
+				double tmpdiry = (Math.random()*velocity); 
+				deltaX = -(Math.random()*velocity)- Math.random(); 
+				deltaY = -(Math.random()*velocity)- Math.random();
 				if((int)(Math.random()*2) == 1) {
 					deltaX= tmpdirx + Math.random();
 				}
@@ -59,10 +61,16 @@ public class Particle extends Rectangle{
 			deltaX += Math.random();
 			deltaY += Math.random();
 			
+			gravity = true;
+			
 		}
 
 		
 		public void update(long dt){ //Update with regards to gravity if such a thing exists
+			if(gravity && deltaY <= EnvironmentConstants.TERMINAL_VELOCITY) {
+				deltaY+=EnvironmentConstants.GRAVITY/20;
+			}
+			
 			life+= dt;
 			if(opacity >= deltaOpacity) {
 				opacity -= deltaOpacity;
@@ -70,7 +78,7 @@ public class Particle extends Rectangle{
 			color = new Color(color.getRed(), color.getGreen(), color.getBlue(), opacity);
 			posX+=deltaX;
 			posY+=deltaY;
-			setBounds(posX, posY, width, height);
+			setBounds((int) posX, (int) posY, width, height);
 		}
 
 		public long getLife() {

@@ -60,33 +60,32 @@ public class RightPanel extends JInternalFrame {
 	
 	public void decide(String actionCommand) {
 		internalPane.removeAll();
+		BorderLayout bl = new BorderLayout();
+		internalPane.setLayout(bl);
 		switch(actionCommand) {
 		case "gif":
 			ImageIcon gif = MainFrame.getReader().readGif("/gifs/ajax-loader.gif");
 			JLabel gifLabel = new JLabel();
 			gifLabel.setIcon(gif);
-			internalPane.add(gifLabel);
+			internalPane.add(gifLabel, BorderLayout.CENTER);
 			drawableComponents = false;
 			break;
 		case "particles":
-			/**
 			drawableComponents = true;
 			colorChooser = new ColorChooser();
 			internalPane.add(colorChooser);
 			ParticleCanvas pc = new ParticleCanvas();
+			SpringLayout spl = new SpringLayout();
+			internalPane.setLayout(spl);
 			internalPane.add(pc);
 			((SpringLayout) internalPane.getLayout()).putConstraint(SpringLayout.NORTH, colorChooser, 5, SpringLayout.NORTH, internalPane);
 			((SpringLayout) internalPane.getLayout()).putConstraint(SpringLayout.WEST, colorChooser, 5, SpringLayout.WEST, internalPane);
 			((SpringLayout) internalPane.getLayout()).putConstraint(SpringLayout.NORTH, pc, 5, SpringLayout.SOUTH, colorChooser);
 			((SpringLayout) internalPane.getLayout()).putConstraint(SpringLayout.WEST, pc, 5, SpringLayout.WEST, internalPane);
 			break;
-			*/
 		case "Drag&Drop": 
-			BorderLayout bl = new BorderLayout();
-			internalPane.setLayout(bl);
 			internalPane.add(new DragCanvas(), BorderLayout.CENTER);
 			drawableComponents = true;
-			
 			break;
 		case "":
 			System.err.println("When creating a listitem, an action command must be added as well!");

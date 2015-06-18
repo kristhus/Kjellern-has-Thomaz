@@ -9,16 +9,20 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
+import constants.EnvironmentConstants;
+
 
 
 public class ParticleCluster {
 
 	private int particleLimit;
 	private int particlesPerSecond;
-	private int deltaSecond;
+	private long deltaSecond;
 	private ArrayList<Particle> particles;
 	
 	private ParticleCanvas caller;
+	
+
 	
 	public ParticleCluster(int particleLimit, int particlesPerSecond, ParticleCanvas caller) {
 		particles = new ArrayList<Particle>();
@@ -38,11 +42,12 @@ public class ParticleCluster {
 	}
 
 	public void update(long dt) {
-		float lifetime = (particleLimit/particlesPerSecond)*1000;
+		
+		float lifetime = (particleLimit/particlesPerSecond);
 		deltaSecond += dt;
-		if(deltaSecond > 400) 
-			deltaSecond = 0;
-		if( particles.size() < particleLimit && caller.mouseDown){// && particlesPerSecond < deltaSecond) {
+		if(deltaSecond > 20) 
+			deltaSecond = dt;
+		while( particles.size() < particleLimit && caller.mouseDown){// && particlesPerSecond < deltaSecond) { SWAP WHILE with it to remove burst
 			Particle p;
 			if(MainFrame.getRightPanel().getColorChooser().isSeedOn()){
 				p = seeded();				
@@ -51,8 +56,12 @@ public class ParticleCluster {
 			}
 			particles.add(p); 
 		}
-		else if(particles.size() >= particleLimit) {
+		if(particles.size() >= particleLimit) {
 			particles.remove(0);
+		}
+		for(Particle p : particles) {
+			if(p.life >= lifetime)
+				particles.remove(p);
 		}
 		ArrayList<Particle> tmpParticles = new ArrayList<Particle>();
 		for(Particle p : particles) {
@@ -62,6 +71,7 @@ public class ParticleCluster {
 			}
 		}
 		particles = tmpParticles;
+		
 	}
 	
 	

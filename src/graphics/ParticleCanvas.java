@@ -29,29 +29,28 @@ public class ParticleCanvas extends JPanel implements Drawable, MouseMotionListe
 	public ParticleCanvas() {
 		
 		
-		cluster = new ParticleCluster(1000, 100, this);
+		cluster = new ParticleCluster(100, 1, this);
 		
 		BorderLayout bl = new BorderLayout();
 		setLayout(bl);
-		setPreferredSize(new Dimension(1000, 1000));
+		setPreferredSize(new Dimension(300, 300));
+		setLocation(300,300);
 		setBackground(Color.white);
 		setVisible(true);
-		validate();
-		
 		addMouseMotionListener(this);
 		addMouseListener(this);
 		
 	}
 
 	public void draw(Graphics g) {
-		super.paintComponent(g);
-		Graphics2D g2d = (Graphics2D) g.create();
-	    	 ArrayList<Particle> c = cluster.getParticles();
-	    	 for(Particle p : c) {
-	 			g2d.setColor(p.color);
-	 			g2d.fillRect(p.posX, p.posY, p.width, p.height);
-	     }
-	     g2d.dispose();
+		g = getGraphics();
+		super.paint(g);
+		ArrayList<Particle> c = cluster.getParticles();
+   	 	for(Particle p : c) {
+			g.setColor(p.color);
+			g.fillRect((int) p.posX, (int) p.posY, p.width, p.height);
+   	 	}
+   	 	g.dispose();
 	}
 	
 	public void update(long dt) {
