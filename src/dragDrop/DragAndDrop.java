@@ -131,11 +131,11 @@ public class DragAndDrop extends JPanel implements Drawable {
 	@Override
 	public void draw(Graphics g) {
 		// TODO Auto-generated method stub
-		super.paintComponent(g);
+		//super.paintComponent(g);
 	}
 
 	@Override
-	public void update(long dt) {
+	public void update(double dt) {
 		// TODO Auto-generated method stub
 		
 	}

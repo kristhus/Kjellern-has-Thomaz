@@ -119,7 +119,7 @@ public class MainFrame extends JFrame{
 		}
 	}
 	
-	public static void update(long dt) {
+	public static void update(double dt) {
 		getRightPanel().update(dt);
 	}
 	

@@ -1,4 +1,4 @@
-package ParticleEngine;
+package particleEngine;
 
 import interfaces.Drawable;
 
@@ -82,7 +82,7 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 		
 	}
 	
-	public void update(long dt) {
+	public void update(double dt) {
 	}
 
 

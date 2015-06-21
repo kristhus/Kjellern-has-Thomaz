@@ -101,9 +101,9 @@ public class DragCanvas extends JPanel implements MouseMotionListener, MouseList
 		// TODO Auto-generated method stub
 		//box.setSelected(false);
 		for(DragAndDrop dad : availableComponents) {
-		if(dad.intersects(arg0.getPoint())){
-			dad.setHover(true);
-		}
+			if(dad.intersects(arg0.getPoint())){
+				dad.setHover(true);
+			}
 		}
 	}
 
@@ -139,7 +139,7 @@ public class DragCanvas extends JPanel implements MouseMotionListener, MouseList
 	}
 
 	@Override
-	public void update(long dt) {
+	public void update(double dt) {
 		// TODO Auto-generated method stub
 		
 	}

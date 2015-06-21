@@ -24,11 +24,11 @@ import javax.swing.JRootPane;
 import javax.swing.JWindow;
 import javax.swing.SpringLayout;
 
+import particleEngine.ColorChooser;
 import listeners.KeyBoardListener;
 import moveable.Player;
 import dragDrop.DragAndDrop;
 import dragDrop.DragCanvas;
-import ParticleEngine.ColorChooser;
 
 public class RightPanel extends JInternalFrame{
 
@@ -111,7 +111,7 @@ public class RightPanel extends JInternalFrame{
 	public void draw(Graphics g) {
 		internalPane.draw(g);
 	}
-	public void update(long dt) {
+	public void update(double dt) {
 			internalPane.update(dt);
 	}
 
@@ -132,7 +132,7 @@ public class RightPanel extends JInternalFrame{
 				}
 			}
 		}
-		public void update(long dt) {
+		public void update(double dt) {
 			for(Component c : getComponents()) {
 				if(c instanceof Drawable) {
 					((Drawable)c).update (dt);

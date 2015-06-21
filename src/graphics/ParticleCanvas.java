@@ -15,8 +15,10 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
-import ParticleEngine.Particle;
-import ParticleEngine.ParticleCluster;
+import particleEngine.Box;
+import particleEngine.Particle;
+import particleEngine.ParticleCluster;
+import physics.PhysicsObject;
 
 public class ParticleCanvas extends JPanel implements Drawable, MouseMotionListener, MouseListener{
 
@@ -25,11 +27,15 @@ public class ParticleCanvas extends JPanel implements Drawable, MouseMotionListe
 	public static int mouseY;
 	public static boolean mouseDown;
 	
+	private ArrayList<Box> collisionBoxes;
+	
+	// ADD?: Interpolation and movement along line to smoothen mousemovement
 	
 	public ParticleCanvas() {
 		
 		
-		cluster = new ParticleCluster(100000, 30000, this);
+		cluster = new ParticleCluster(1000, 5, this);
+		collisionBoxes = new ArrayList<Box>();
 		
 		BorderLayout bl = new BorderLayout();
 		setLayout(bl);
@@ -39,20 +45,33 @@ public class ParticleCanvas extends JPanel implements Drawable, MouseMotionListe
 		setVisible(true);
 		addMouseMotionListener(this);
 		addMouseListener(this);
+		
+		collisionBoxes.add(new Box(300, 300, 100,100));
 	}
-
-	public void draw(Graphics g) {
-		g = getGraphics();
-		super.paint(g);
+	
+	
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
 		ArrayList<Particle> c = cluster.getParticles();
    	 	for(Particle p : c) {
 			g.setColor(p.color);
-			g.fillRect((int) p.posX, (int) p.posY, p.width, p.height);
+			g.fillRect((int) p.getX(), (int) p.getY(), (int)p.getWidth(), (int)p.getHeight());
+   	 	}
+   	 	for(Box b : collisionBoxes) {
+   	 		g.setColor(b.color);
+   	 		g.fillRect((int) b.getX(), (int) b.getY(), (int)b.getWidth(), (int)b.getHeight());
    	 	}
    	 	g.dispose();
 	}
 	
-	public void update(long dt) {
+	public void draw(Graphics g) {
+		// By overriding paintcomponent flickering is avoided (this is also the correct way to do it)
+		repaint();
+	}
+	
+	public void update(double dt) {
+		
 		cluster.update(dt);
 	}
 	
@@ -60,8 +79,10 @@ public class ParticleCanvas extends JPanel implements Drawable, MouseMotionListe
 	@Override
 	public void mouseDragged(MouseEvent arg0) {
 		// TODO Auto-generated method stub
+		
 		mouseX = arg0.getX();
 		mouseY = arg0.getY();
+		
 	}
 
 
@@ -105,6 +126,10 @@ public class ParticleCanvas extends JPanel implements Drawable, MouseMotionListe
 	public void mouseReleased(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		mouseDown = false;
+	}
+	
+	public ArrayList<Box> getCollisionBoxes() {
+		return collisionBoxes;
 	}
 	
 }

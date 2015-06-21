@@ -5,15 +5,15 @@ import graphics.MainFrame;
 public class Updater {
 
 	public void calculateFPS() { 
-	long beginTime; //Time when the cycle begins
-        long timeDiff = 0;  // Time it took for the cycle to execute
+		double beginTime; //Time when the cycle begins
+        double timeDiff = 0;  // Time it took for the cycle to execute
         int sleepTime = 0; // ms to sleep (<0 if we're behind)
         int framesSkipped; //Number of frames being skipped
 		
 		boolean isRunning = true;
 		while(isRunning) {
 			try {
-				beginTime = System.currentTimeMillis();
+				beginTime = System.nanoTime()*Math.pow(10,-6);
 				framesSkipped = 0;
 				
 				//RUN UPDATE ON TOP CLASS
@@ -21,7 +21,7 @@ public class Updater {
 				
 				//RUN DRAW ON TOP CLASS
 				MainFrame.draw(MainFrame.getmainFrame().getGraphics());
-				timeDiff = System.currentTimeMillis() - beginTime;
+				timeDiff = System.nanoTime()*Math.pow(10,-6) - beginTime;
 				
 				sleepTime = (int)(1000/MainFrame.FPS - timeDiff); 
 				
@@ -38,7 +38,7 @@ public class Updater {
                         //catching up
                         //updates without rendering
                         //INSERT UPDATE ON TOP CLASS
-						timeDiff = System.currentTimeMillis() - beginTime;
+						timeDiff = System.nanoTime()*Math.pow(10,-6) - beginTime;
 						MainFrame.update(timeDiff);
 				//		MainFrame.update(timeDiff);
                         //add frame period to check if in next frame

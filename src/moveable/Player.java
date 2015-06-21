@@ -58,7 +58,7 @@ public class Player extends JPanel implements Collidable, Drawable   {
 	}
 	
 
-	public void update(long dt){		
+	public void update(double dt){		
 		// deltaTime
 		boolean keyLeftPressed, keyRightPressed, keyDownPressed, keyUpPressed;
 		keyLeftPressed = MainFrame.getKeyBoardListener().isKeyLeftPressed();

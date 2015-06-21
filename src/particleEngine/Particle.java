@@ -1,4 +1,4 @@
-package ParticleEngine;
+package particleEngine;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -7,6 +7,7 @@ import java.awt.Rectangle;
 
 import javax.swing.ImageIcon;
 
+import physics.PhysicsObject;
 import constants.EnvironmentConstants;
 
 /**
@@ -19,19 +20,13 @@ TerminalVelocity -- || --
 
 */
 
-public class Particle extends Rectangle{
+public class Particle extends PhysicsObject{
 
-	public double posX;
-	public double posY;
-	public int width;
-	public int height;
-	public double deltaX; //SpeedModifier
-	public double deltaY; //
 	public float velocity = 5; //MaxSpeed
 	public int opacity = 255;
-	public int deltaOpacity = 3; //(multiplum of 5, 3 or 17)
+	public int deltaOpacity = 1; //(multiplum of 5, 3 or 17)
 	private boolean gravity;
-	public long life;
+	public double life;
 	private int deltaRed = 20;
 	private int deltaGreen = 20;
 	private int deltaBlue = 20;
@@ -47,29 +42,28 @@ public class Particle extends Rectangle{
 	private int currentTheme;
 	
 		public Particle(int width, int height, ImageIcon sprite, Color c, int x, int y, boolean randomDirection) {
-			super(width, height);
-			this.width = width;
-			this.height = height;
+			setWidth(width);
+			setHeight(height);
 			this.sprite = sprite;
 			color = c;
-			posX = x;
-			posY = y;
+			setX(x);
+			setY(y);
 			
 			//random direction
 			if(randomDirection) {
 				double tmpdirx = (Math.random()*velocity); 
 				double tmpdiry = (Math.random()*velocity); 
-				deltaX = -(Math.random()*velocity); 
-				deltaY = -(Math.random()*velocity);
+				setVelocityX(-(Math.random()*velocity)); 
+				setVelocityY(-(Math.random()*velocity));
 				if((int)(Math.random()*2) == 1) {
-					deltaX= tmpdirx;
+					setVelocityX(tmpdirx);
 				}
 				if((int)(Math.random()*2) == 1) {
-					deltaY= tmpdiry;
+					setVelocityY(tmpdiry);
 				}
 			}
-			deltaX += Math.random();
-			deltaY += Math.random();
+			setVelocityX(getVelocityX() + Math.random());
+			setVelocityY(getVelocityY() + Math.random());
 			gravity = true;
 		}
 		public Particle(int width, int height, ImageIcon sprite, Color c, int x, int y, boolean randomDirection, int currentTheme) {
@@ -133,30 +127,54 @@ public class Particle extends Rectangle{
 			}
 		}
 		
-		public void update(long dt){ //Update with regards to gravity if such a thing exists
+		public double getNextVelocityY() {
+			/*
+			double buoyancyY = getBuoyancyForce(EnvironmentConstants.AIR_DENSITY)/100;
+			if(getVelocityY() > 0) {
+				buoyancyY = Math.abs(buoyancyY)*-1;
+			}
+			System.out.println(buoyancyY);
+			*/
+			return getVelocityY()+EnvironmentConstants.GRAVITY/10 ;
+		}
+		
+		public void update(double dt){ //Update with regards to gravity if such a thing exists
 			updateTheme();
-			if(gravity && deltaY <= EnvironmentConstants.TERMINAL_VELOCITY) {
-				deltaY+=EnvironmentConstants.GRAVITY/10;
+			double buoyancyX = getBuoyancyForce(EnvironmentConstants.AIR_DENSITY);
+			
+			if(gravity && getVelocityY() <= EnvironmentConstants.TERMINAL_VELOCITY) {
+				setVelocityY(getNextVelocityY());
 			}
 			life+= dt;
+			
+			
 			if(opacity >= deltaOpacity) {
 				opacity -= deltaOpacity;
 			}
 			color = new Color(color.getRed(), color.getGreen(), color.getBlue(), opacity);
-			posX+=deltaX;
-			posY+=deltaY;
-			setBounds((int) posX, (int) posY, width, height);
+			setX(getX()+getVelocityX());
+			setY(getY()+getVelocityY());
 		}
 
-		public long getLife() {
+		public double getLife() {
 			return life;
 		}
 		
 		public double euclidianDistance(Point caller) {
 			Point particle = new Point();
-			particle.x = (int) posX;
-			particle.y = (int) posY;
+			particle.x = (int) getX();
+			particle.y = (int) getY();
 			return particle.distance(caller);
+		}
+		
+		@Override
+		public boolean collided(Rectangle rect) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		public Rectangle.Float getBounds() {
+			return new Rectangle.Float((float)getX(), (float)getY(), (float)getWidth(), (float)getHeight());
 		}
 
 }
