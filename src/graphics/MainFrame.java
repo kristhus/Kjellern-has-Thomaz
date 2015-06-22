@@ -81,7 +81,7 @@ public class MainFrame extends JFrame{
 		}
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setPreferredSize(new Dimension(800, 600));
+		setPreferredSize(new Dimension(1400, 800));
 		JFrame.setDefaultLookAndFeelDecorated(true);
 	//	mainFrame.setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("")));  //Need an icon
 		setVisible(true);

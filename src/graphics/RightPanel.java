@@ -24,6 +24,7 @@ import javax.swing.JRootPane;
 import javax.swing.JWindow;
 import javax.swing.SpringLayout;
 
+import shapeCreator.CreatorCanvas;
 import listeners.KeyBoardListener;
 import moveable.Player;
 import dragDrop.DragAndDrop;
@@ -44,7 +45,7 @@ public class RightPanel extends JInternalFrame{
 		super();
 		setBackground(Color.white);
 		
-		setBounds(150,0,600,600);
+		setBounds(200,0,1000,700);
 		setVisible(true);
 		setClosable(true);
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
@@ -101,6 +102,10 @@ public class RightPanel extends JInternalFrame{
 		case "move":
 			Player player = new Player(10,10,0,0,5,5);
 			internalPane.add(player);
+			drawableComponents = true;
+			break;
+		case "create":
+			internalPane.add(new CreatorCanvas());
 			drawableComponents = true;
 			break;
 			

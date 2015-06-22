@@ -21,18 +21,19 @@ public class LeftPanel extends JInternalFrame {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
-		c.weighty = 0.1;
 		c.anchor = GridBagConstraints.NORTHWEST;
-		canvas.add(new ListItem(null, "GifLoader", "gif"), c);
+		canvas.add(new ListItem("", "GifLoader", "gif", false), c);
 		c.gridy ++;
-		canvas.add(new ListItem(null, "Particles", "particles"), c);
+		canvas.add(new ListItem("", "Particles", "particles", false), c);
 		c.gridy ++;
 		c.gridy ++;
-		canvas.add(new ListItem(null, "Click & Drag", "Drag&Drop"), c);
+		canvas.add(new ListItem("", "Click & Drag", "Drag&Drop", false), c);
 		c.gridy++;
-		canvas.add(new ListItem(null, "Movable", "move"), c);
+		canvas.add(new ListItem("", "Movable", "move", false), c);
+		c.gridy++;
+		canvas.add(new ListItem("", "Shape Creator", "create", false), c);
 		
-		setBounds(0, 0, 150, 500);
+		setBounds(0, 0, 200, 700);
 		setVisible(true);
 		setClosable(false);
 		add(canvas);
