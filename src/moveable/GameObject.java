@@ -67,7 +67,7 @@ public abstract class GameObject extends JPanel implements Collidable,  Drawable
 				if(insideBounds(posXNext, posYNext, width, height)){
 					posX -= dX;
 				}
-				else if(!insideBounds(posXNext, posYNext, width, height)){
+				else if(!insideBounds(posXNext, posYNext, width, height) && posX - dX <= 0 ){
 					posX = 0;
 				}
 			}
@@ -76,7 +76,7 @@ public abstract class GameObject extends JPanel implements Collidable,  Drawable
 				if(insideBounds(posXNext, posYNext, width, height)){
 					posX += dX;
 				}
-				else if(!insideBounds(posXNext, posYNext, width, height)){
+				else if(!insideBounds(posXNext, posYNext, width, height) && posX + dX >= ancestor.getWidth()){
 					posX = ancestor.getWidth() - width;
 				}
 			}
@@ -85,7 +85,7 @@ public abstract class GameObject extends JPanel implements Collidable,  Drawable
 				if(insideBounds(posXNext, posYNext, width, height)){
 					posY += dY;
 				}
-				else if((!insideBounds(posXNext, posYNext, width, height))){
+				else if((!insideBounds(posXNext, posYNext, width, height) && posY + dY >= ancestor.getHeight())){
 					posY = ancestor.getHeight() - height; 
 				}
 			}
@@ -94,7 +94,7 @@ public abstract class GameObject extends JPanel implements Collidable,  Drawable
 				if(insideBounds(posXNext, posYNext, width, height)){
 					posY -= dY;
 				}
-				else if((!insideBounds(posXNext, posYNext, width, height))){
+				else if((!insideBounds(posXNext, posYNext, width, height) && posY - dY <= 0 )){
 					posY = 0;
 				}
 		
