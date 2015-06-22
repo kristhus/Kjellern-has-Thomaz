@@ -60,76 +60,53 @@ public abstract class GameObject extends JPanel implements Collidable,  Drawable
 		keyDownPressed = MainFrame.getKeyBoardListener().isKeyDownPressed();
 		keyUpPressed = MainFrame.getKeyBoardListener().isKeyUpPressed();
 		
-		
 		posXNext = posX;
 		posYNext = posY;
-		
 			if(keyLeftPressed){ 
 				posXNext -= dX;
-				if(!outOfBounds1(posXNext, posYNext)){
+				if(insideBounds(posXNext, posYNext, width, height)){
 					posX -= dX;
+				}
+				else if(!insideBounds(posXNext, posYNext, width, height)){
+					posX = 0;
+				}
 			}
 			if(keyRightPressed){
 				posXNext += dX;
-				if(!outOfBounds1(posXNext, posYNext)){
+				if(insideBounds(posXNext, posYNext, width, height)){
 					posX += dX;
+				}
+				else if(!insideBounds(posXNext, posYNext, width, height)){
+					posX = ancestor.getWidth() - width;
 				}
 			}
 			if(keyDownPressed){
 				posYNext += dY;
-				if(!outOfBounds1(posXNext, posYNext)){
+				if(insideBounds(posXNext, posYNext, width, height)){
 					posY += dY;
+				}
+				else if((!insideBounds(posXNext, posYNext, width, height))){
+					posY = ancestor.getHeight() - height; 
 				}
 			}
 			if(keyUpPressed){
 				posYNext -= dY;
-				if(!outOfBounds1(posXNext, posYNext)){
+				if(insideBounds(posXNext, posYNext, width, height)){
 					posY -= dY;
 				}
+				else if((!insideBounds(posXNext, posYNext, width, height))){
+					posY = 0;
+				}
+		
 			}
 			
-		}
-		
-	/*	if(keyLeftPressed){ 
-			posXNext -= dX;
-			if(outOfBounds2(ancestor.getBounds())){
-				posX -= dX;
-		}
-		if(keyRightPressed){
-			posXNext += dX;
-			if(outOfBounds2(ancestor.getBounds())){
-				posX += dX;
-			}
-		}
-		if(keyDownPressed){
-			posYNext += dY;
-			if(outOfBounds2(ancestor.getBounds())){
-				posY += dY;
-			}
-		}
-		if(keyUpPressed){
-			posYNext -= dY;
-			if(outOfBounds2(ancestor.getBounds())){
-				posY -= dY;
-			}
-		}
-		
-	}
-	*/
-	}
-
-
-	
-	public boolean outOfBounds1(int x, int y) {
-		
-		return (( x  >= 0 && x + width <= ancestor.getWidth()) && (y >= 0 && y + height <= ancestor.getHeight()));
-		
 	}
 
 	
-	public boolean outOfBounds2(Rectangle2D rect){
+	public boolean insideBounds(double x, double y, double w, double h){
 		
-		return !bounds.intersects(rect);
+		return((x >= 0 && x + w <= ancestor.getWidth()) && (y >= 0 && y + h <= ancestor.getHeight()));
+		
 		
 	}
 

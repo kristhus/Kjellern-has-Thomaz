@@ -18,14 +18,19 @@ public class MoveCanvas extends JPanel implements Drawable{
 		p.setAncestor(this);
 	}
 
+	
 	@Override
-	public void draw(Graphics g) {
+	public void paintComponent(Graphics g) {
 		// TODO Auto-generated method stub
-		g = getGraphics();
 		super.paintComponent(g);
-		g = getGraphics();
 		p.draw(g);	
 	}
+	
+	@Override
+	public void draw(Graphics g) {
+		repaint();
+	}
+
 
 	@Override
 	public void update(long dt) {
