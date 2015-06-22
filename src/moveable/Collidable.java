@@ -1,11 +1,13 @@
 package moveable;
 
-import java.awt.Rectangle;
+import java.awt.Shape;
 
 public interface Collidable {
 
 	
-	public boolean collided(Rectangle rect);
+	public boolean collided(Shape shape);
+	
+	public boolean outOfBounds(int x, int y);
 	
 	
 }

@@ -15,8 +15,8 @@ public class DecisionMaker {
 				
 			case "move" :
 				JPanel p = new JPanel();
-				MainFrame.getRightPanel().add(new Player(30, 30, 100, 100, 2, 2));
-				
+			//	MainFrame.getRightPanel().add(new Player(30, 30, 100, 100, 2, 2));
+			//	MainFrame.getRightPanel().add(new Player());
 		}
 		return null;
 	}
