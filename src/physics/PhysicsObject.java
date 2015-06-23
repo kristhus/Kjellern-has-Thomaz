@@ -17,7 +17,7 @@ public abstract class PhysicsObject implements Collidable{
 	//Should be implemented by a ApplicationObject / GameObject etc.
 	
 	private double density;
-	private double weight = 1;
+	private double weight = 0.01;
 	public double x;
 	private double y;
 	private double velocityX;
@@ -28,6 +28,10 @@ public abstract class PhysicsObject implements Collidable{
 	private double height;
 	private ArrayList<Force> forces;//A list with the forces influencing this object
 	
+	public PhysicsObject() {
+		dvX = 0;
+		dvY = EnvironmentConstants.GRAVITY/10;
+	}
 	
 	public double getKineticEnergy() {
 		return 0.5*weight*Math.pow(Math.abs(velocityX)+Math.abs(velocityY), 2);
@@ -36,14 +40,17 @@ public abstract class PhysicsObject implements Collidable{
 		return weight*EnvironmentConstants.GRAVITY*distance;
 	}
 	public double getMomentum() {
-		return weight*Math.abs(velocityX)+Math.abs(velocityY);
+		return weight*(Math.abs(velocityX)+Math.abs(velocityY));
 	}
-	public double getMomentumCollisionX(PhysicsObject obj) { //Elastic
+	
+	
+	// TODO: FIKS HER, kjører disse med feil referanse på variabler for ob.v2 (se på velocityX og weight, lokale referanser..)
+	public double getMomentumCollisionX(PhysicsObject obj) { 
 		double u1 = velocityX; double m1 = weight; double m2 = obj.getWeight(); double u2 = obj.getVelocityX();
 		double vxAfter = (u1*(m1-m2)+2*m2*u2)/(m1+m2);
 		return vxAfter;
 	}
-	public double getMomentumCollisionY(PhysicsObject obj) { //Elastic
+	public double getMomentumCollisionY(PhysicsObject obj) { 
 		double u1 = velocityY; double m1 = weight; double m2 = obj.getWeight(); double u2 = obj.getVelocityY();
 		double vyAfter = (u1*(m1-m2)+2*m2*u2)/(m1+m2);
 		return vyAfter;
@@ -67,17 +74,38 @@ public abstract class PhysicsObject implements Collidable{
 		return pib;
 	}
 	
+	public void updatePosition(double dt) {// dependant on speed
+		x += velocityX;//*dt;
+		y += velocityY;//*dt;
+	}
+	public void updateSpeed(double dt) { // dependant on acceleration
+		velocityX += dvX;//*dt;
+		velocityY += dvY;//*dt;
+	}
+	public void updateAcceleration(double dt) { // dependant on Forces
+		
+	}
+	
 	public void collide(PhysicsObject obj, double yModifier) { //TODO: Should have a shape of some sorts, and this method should be remade in regards to that
 		//TODO: velocity is the vector to be used to figure out if 
 		
-		
+		/*
+		if(velocityX == 0 && velocityY == 0) {
+			System.out.println("NO SPEED");
+			float vX = (float) getMomentumCollisionX(obj);
+			float vY = (float) getMomentumCollisionY(obj);
+			System.out.println("vX: " + vX);
+			System.out.println("vY: " + vY);
+			System.out.println("================================");
+			return new Point.Float(vX, vY);
+		}
+		*/
 		Point.Float thisPoint = new Point.Float((float) (getX()), (float) (getY()));
 		for(Point.Float p : getPointsInBounds()) {
 			if(distFromPointToRect(obj.getBounds(), p) < distFromPointToRect(obj.getBounds(), thisPoint)) {
 				thisPoint = p;
 			}
 		}
-		
 		Point.Float thisTowards = getNextPosition(thisPoint.getX(), thisPoint.getY(), getVelocityX(), getVelocityY() + yModifier);
 		Point.Float A = new Point.Float((float) obj.getX(), (float) obj.getY());
 		Point.Float B = new Point.Float((float)(obj.getX() + obj.getWidth()), (float) obj.getY());
@@ -112,8 +140,13 @@ public abstract class PhysicsObject implements Collidable{
 		Point intersection = findIntersectedPoint(objectLine, intersectionLine);
 		
 		
-		//System.out.println("vx   :   " + getVelocityX());
-		//System.out.println("vy   :   " + getVelocityY());
+		System.out.println("this:    " + thisPoint);
+		System.out.println("EdgeA:   "  + edgeA);
+		System.out.println("EdgeB:   "  + edgeB);
+		System.out.println("thisT:   " + thisTowards);
+		System.out.println("inter:   " + intersection);
+		System.out.println("vx   :   " + getVelocityX());
+		System.out.println("vy   :   " + getVelocityY());
 		double b = thisPoint.distance(intersection); // thisToIntersection
 		//double a = Math.min(thisPoint.distance(edgeA),thisPoint.distance(edgeB)); //thisToA //??????
 		double a = thisPoint.distance(edgeA);
@@ -124,19 +157,38 @@ public abstract class PhysicsObject implements Collidable{
 		
 		
 		// This part is wrong, but i'm sick and tired of collision :v
+		double tmpSpeedX = getVelocityX();
+		double tmpSpeedY = getVelocityY();
 		if(velocityY > 0) {
 			if(alpha < theta) 							// Only for collision where y must be reversed
-				setVelocityX(getVelocityX()*-1);
+				tmpSpeedX = getVelocityX()*-1;
 			else
-				setVelocityY(getVelocityY()*-1);
+				tmpSpeedY = getVelocityY()*-1;
 		}else {
 			if(alpha > theta) 							// Only for collision where y must be reversed
-				setVelocityX(getVelocityX()*-1);
+				tmpSpeedX = getVelocityX()*-1;
 			else
-				setVelocityY(getVelocityY()*-1);
+				tmpSpeedY = getVelocityY()*-1;
 		}
-//		setVelocityX(getMomentumCollisionX(obj));
-//		setVelocityY(getMomentumCollisionY(obj));
+		//Point.Float speed = new Point.Float((float) tmpSpeedX, (float) tmpSpeedY);
+		
+		//setVelocityX(tmpSpeedX);
+		//setVelocityY(tmpSpeedY);
+		
+		//return speed;
+		double setX = getMomentumCollisionX(obj);
+		double setY = getMomentumCollisionY(obj);
+		obj.setVelocityX(obj.getMomentumCollisionX(this));
+		obj.setVelocityY(obj.getMomentumCollisionY(this));
+		System.out.println("setX: " + setX);
+		System.out.println("setY: " + setY);
+		setVelocityX(-setX);
+		setVelocityY(-setY);
+		System.out.println("vx2   :   " + getVelocityX());
+		System.out.println("vy2   :   " + getVelocityY());
+		System.out.println("ob.vx2:   " + obj.getVelocityX());
+		System.out.println("ob.vy2:   " + obj.getVelocityY());
+		System.out.println("===================================");
 		/*
 		System.out.println("this:    " + thisPoint);
 		System.out.println("EdgeA:   "  + edgeA);
@@ -262,8 +314,8 @@ public abstract class PhysicsObject implements Collidable{
 		return Math.sqrt(dx*dx + dy*dy);
 	}
 	
-	private Point getNextPosition(){
-		return new Point((int)(getX()+2*velocityX), (int) (getY()+2*velocityY));
+	private Point getNextPosition(){ // getnext speed THEN get next position
+		return new Point((int)(getX()+velocityX), (int) (getY()+velocityY));
 	}
 	
 	public Point2D.Float getNextPosition(double x, double y, double speedX, double speedY) {
@@ -271,6 +323,17 @@ public abstract class PhysicsObject implements Collidable{
 		Point2D.Float p = new Point2D.Float(
 		          (float)(x+speedX), (float) (y+speedY));
 		return p;
+	}
+	
+	public double getNextVelocityY() {
+		/*
+		double buoyancyY = getBuoyancyForce(EnvironmentConstants.AIR_DENSITY)/100;
+		if(getVelocityY() > 0) {
+			buoyancyY = Math.abs(buoyancyY)*-1;
+		}
+		System.out.println(buoyancyY);
+		*/
+		return getVelocityY()+EnvironmentConstants.GRAVITY/10 ;
 	}
 	
 	public boolean willCollide(PhysicsObject obj, double speedModifier1, double speedModifier2){

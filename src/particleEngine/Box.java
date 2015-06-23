@@ -19,6 +19,7 @@ public class Box extends PhysicsObject {
 		setHeight(height);
 		setVelocityX(0);
 		setVelocityY(0);
+		setWeight(10);
 	}
 	
 	@Override
@@ -26,5 +27,11 @@ public class Box extends PhysicsObject {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	public void update(double dt) {
+//		updateSpeed(dt);
+		updatePosition(dt);
+	}
+
 
 }

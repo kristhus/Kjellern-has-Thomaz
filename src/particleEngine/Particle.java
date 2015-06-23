@@ -127,33 +127,19 @@ public class Particle extends PhysicsObject{
 			}
 		}
 		
-		public double getNextVelocityY() {
-			/*
-			double buoyancyY = getBuoyancyForce(EnvironmentConstants.AIR_DENSITY)/100;
-			if(getVelocityY() > 0) {
-				buoyancyY = Math.abs(buoyancyY)*-1;
-			}
-			System.out.println(buoyancyY);
-			*/
-			return getVelocityY()+EnvironmentConstants.GRAVITY/10 ;
-		}
 		
 		public void update(double dt){ //Update with regards to gravity if such a thing exists
 			updateTheme();
-			double buoyancyX = getBuoyancyForce(EnvironmentConstants.AIR_DENSITY);
-			
 			if(gravity && getVelocityY() <= EnvironmentConstants.TERMINAL_VELOCITY) {
-				setVelocityY(getNextVelocityY());
+				updateSpeed(dt);
 			}
 			life+= dt;
-			
 			
 			if(opacity >= deltaOpacity) {
 				opacity -= deltaOpacity;
 			}
 			color = new Color(color.getRed(), color.getGreen(), color.getBlue(), opacity);
-			setX(getX()+getVelocityX());
-			setY(getY()+getVelocityY());
+			updatePosition(dt);
 		}
 
 		public double getLife() {

@@ -7,6 +7,7 @@ import graphics.RightPanel;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.util.ArrayList;
 
 import physics.PhysicsObject;
@@ -54,7 +55,7 @@ public class ParticleCluster {
 			if(MainFrame.getRightPanel().getColorChooser().isSeedOn()){
 				p = seeded();				
 			}else {
-				p = new Particle(5, 5, null, MainFrame.getRightPanel().getColorChooser().getColor(), caller.mouseX, caller.mouseY, true, Particle.FLAME);
+				p = new Particle(2, 2, null, MainFrame.getRightPanel().getColorChooser().getColor(), caller.mouseX, caller.mouseY, true, Particle.FLAME);
 			}
 			particles.add(p); 
 			cycles ++;
@@ -67,6 +68,10 @@ public class ParticleCluster {
 		boolean sublist = false;
 		int sublistIndex = 0;
 		for(Particle p : particles) {
+			//TODO: IF OUT OF BOUNDS DO SOMETHING
+//			if (p.getBounds().get){
+//				
+//			}
 			p.update(dt);
 			if(p.life < lifetime && particles.size() < particleLimit) {
 				tmpParticles.add(p);
@@ -86,9 +91,12 @@ public class ParticleCluster {
 				if(p.willCollide(b, p.getNextVelocityY(), 0)) {
 					try{
 						p.collide(b, p.getNextVelocityY());
-						//b.collide(p);
+						System.out.println("________________");
 					}catch(NullPointerException e){
+						e.printStackTrace();
 						
+					}finally {
+						//System.exit(0);
 					}
 				}
 			}

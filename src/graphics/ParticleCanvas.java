@@ -34,12 +34,12 @@ public class ParticleCanvas extends JPanel implements Drawable, MouseMotionListe
 	public ParticleCanvas() {
 		
 		
-		cluster = new ParticleCluster(1000, 5, this);
+		cluster = new ParticleCluster(1000, 200, this);
 		collisionBoxes = new ArrayList<Box>();
 		
 		BorderLayout bl = new BorderLayout();
 		setLayout(bl);
-		setPreferredSize(new Dimension(600, 600));
+		setPreferredSize(new Dimension(1000, 800));
 		setLocation(300,300);
 		setBackground(Color.black);
 		setVisible(true);
@@ -71,8 +71,9 @@ public class ParticleCanvas extends JPanel implements Drawable, MouseMotionListe
 	}
 	
 	public void update(double dt) {
-		
 		cluster.update(dt);
+		for(Box b : collisionBoxes)
+			b.update(dt);
 	}
 	
 	
