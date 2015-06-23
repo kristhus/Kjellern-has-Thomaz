@@ -38,6 +38,7 @@ public class MainFrame extends JFrame{
 	private static final boolean DEV_MODE = false;
 	private static boolean DEV_MODE_INITIALIZED = false;
 	private static KeyBoardListener keyBoardListener;
+	public static final int FPS = 30;
 	
 	public static LeftPanel leftPanel;
 	public static RightPanel rightPanel;
@@ -81,7 +82,7 @@ public class MainFrame extends JFrame{
 		}
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setPreferredSize(new Dimension(800, 600));
+		setPreferredSize(new Dimension(1200, 900));
 		JFrame.setDefaultLookAndFeelDecorated(true);
 	//	mainFrame.setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("")));  //Need an icon
 		setVisible(true);
@@ -118,7 +119,7 @@ public class MainFrame extends JFrame{
 		}
 	}
 	
-	public static void update(long dt) {
+	public static void update(double dt) {
 		getRightPanel().update(dt);
 	}
 	
