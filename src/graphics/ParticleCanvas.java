@@ -29,7 +29,6 @@ public class ParticleCanvas extends JPanel implements Drawable{
 
 	private ParticleCluster cluster;
 	private ArrayList<Box> collisionBoxes;
-	private Graphics sourceGraphics;
 	private Box tmpBox;
 	// ADD?: Interpolation and movement along line to smoothen mousemovement
 	
@@ -77,7 +76,6 @@ public class ParticleCanvas extends JPanel implements Drawable{
 	
 	public void draw(Graphics g) {
 		// By overriding paintcomponent flickering is avoided (this is also the correct way to do it)
-		sourceGraphics = g;
 		repaint();
 	}
 	
@@ -88,6 +86,7 @@ public class ParticleCanvas extends JPanel implements Drawable{
 		
 		for(int i = 0; i < collisionBoxes.size()-1; i++) {
 			Box b = collisionBoxes.get(i);
+			b.goesOutOfBounds(new Rectangle(0,0, getWidth(), getHeight()));
 			for(int j = 1; j < collisionBoxes.size(); j++) {
 				Box p = collisionBoxes.get(j);
 		if(p.willCollide(b, p.getNextVelocityY(), 0)) {
