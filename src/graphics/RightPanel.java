@@ -8,6 +8,7 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -27,6 +28,7 @@ import javax.swing.SpringLayout;
 
 import shapeCreator.CreatorCanvas;
 import particleEngine.ColorChooser;
+import listeners.CanvasMouseListener;
 import listeners.KeyBoardListener;
 import moveable.Player;
 import dragDrop.DragAndDrop;
@@ -41,29 +43,30 @@ public class RightPanel extends JInternalFrame{
 	
 	
 	private InternalPanel internalPane;
+	private CanvasMouseListener mouseListener;
+	
 	
 	public RightPanel() {
 		super();
 		setBackground(Color.white);
-		
 		setBounds(200,0,1000,700);
-		setVisible(true);
 		setClosable(true);
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setMaximizable(true);
-		
+		mouseListener = new CanvasMouseListener();
 		internalPane = new InternalPanel();
 		internalPane.setBackground(Color.red);
 		internalPane.setVisible(true);
 		BorderLayout bl = new BorderLayout();
 		setLayout(bl);
-		SpringLayout spl = new SpringLayout();
-		internalPane.setLayout(spl);
-		//temp.setBounds(0, 0, 200, 200);
-		add(internalPane);
-		
+		GridLayout gl = new GridLayout();
+		setContentPane(internalPane);
+		mouseListener = new CanvasMouseListener();
 		internalPane.addKeyListener(MainFrame.getKeyBoardListener());
-		
+		setResizable(true);
+		decide("particles");
+		revalidate();
+		setVisible(true);
 	}
 	
 	public void decide(String actionCommand) {
@@ -127,14 +130,14 @@ public class RightPanel extends JInternalFrame{
 	}
 	
 
-	private class InternalPanel extends JPanel implements Drawable{
+	public class InternalPanel extends JPanel implements Drawable{
 		
 		@Override
 		public void draw(Graphics g) {
 			// TODO Auto-generated method stub
 			for(Component c : getComponents()) {
 				if(c instanceof Drawable){
-					((Drawable) c).draw(g);
+					((Drawable) c).draw(getGraphics());  // I want the children to have acces to the entire graphics of this un
 				}
 			}
 		}
@@ -148,4 +151,8 @@ public class RightPanel extends JInternalFrame{
 		
 	}
 
+	public CanvasMouseListener getMouseListener() {
+		return mouseListener;
+	}
+	
 }

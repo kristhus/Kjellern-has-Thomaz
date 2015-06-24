@@ -8,6 +8,7 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import physics.PhysicsObject;
@@ -44,18 +45,18 @@ public class ParticleCluster {
 		int blue = (int)(Math.random()*255); 
 		Color c = new Color(red, green, blue);
 		int dim = 1 + (int)(Math.random()*10);
-		return new Particle(dim, dim, null, c, caller.mouseX, caller.mouseY, true);
+		return new Particle(dim, dim, null, c,  MainFrame.mouseListener.mousePosition.x, MainFrame.mouseListener.mousePosition.y, true);
 	}
 
 	public void update(double dt) {
 		int cycles = 1;
 		deltaTimeDecimal += particlesPerUpdate-(int) particlesPerUpdate;
-		while( particles.size() < particleLimit && caller.mouseDown && cycles <= particlesPerUpdate+deltaTimeDecimal){// && particlesPerSecond < deltaSecond) { 
+		while( particles.size() < particleLimit && MainFrame.mouseListener.leftMouseDown && cycles <= particlesPerUpdate+deltaTimeDecimal){// && particlesPerSecond < deltaSecond) { 
 			Particle p;
 			if(MainFrame.getRightPanel().getColorChooser().isSeedOn()){
 				p = seeded();				
 			}else {
-				p = new Particle(2, 2, null, MainFrame.getRightPanel().getColorChooser().getColor(), caller.mouseX, caller.mouseY, true, Particle.FLAME);
+				p = new Particle(1, 1, null, MainFrame.getRightPanel().getColorChooser().getColor(), MainFrame.mouseListener.mousePosition.x, MainFrame.mouseListener.mousePosition.y, true, Particle.FLAME);
 			}
 			particles.add(p); 
 			cycles ++;
@@ -69,9 +70,7 @@ public class ParticleCluster {
 		int sublistIndex = 0;
 		for(Particle p : particles) {
 			//TODO: IF OUT OF BOUNDS DO SOMETHING
-//			if (p.getBounds().get){
-//				
-//			}
+			p.goesOutOfBounds(new Rectangle(0,0,caller.getWidth(), caller.getHeight()));
 			p.update(dt);
 			if(p.life < lifetime && particles.size() < particleLimit) {
 				tmpParticles.add(p);
@@ -79,7 +78,7 @@ public class ParticleCluster {
 				sublist = true;
 			}
 		}
-		if(sublist && deltaTimeDecimal+particlesPerUpdate < particles.size()) {
+		if(sublist && deltaTimeDecimal+particlesPerUpdate < particles.size()) { // UUh, what is this?
 			particles = new ArrayList<Particle>(particles.subList((int) (deltaTimeDecimal+particlesPerUpdate), particles.size())); //Correctly removes particles
 		}else{
 			particles = tmpParticles;
@@ -93,8 +92,8 @@ public class ParticleCluster {
 						p.collide(b, p.getNextVelocityY());
 						System.out.println("________________");
 					}catch(NullPointerException e){
-						e.printStackTrace();
-						
+//						e.printStackTrace();
+						//TODO; Fiks na jævla erroren
 					}finally {
 						//System.exit(0);
 					}
@@ -109,7 +108,7 @@ public class ParticleCluster {
 	}
 	
 	
-	public ArrayList<Particle> getParticles() {
+	public synchronized ArrayList<Particle> getParticles() { // Should probably synchronize all access to particles because poop
 		return particles;
 	}
 

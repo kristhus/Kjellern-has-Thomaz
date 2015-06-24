@@ -3,6 +3,7 @@ package particleEngine;
 import interfaces.Drawable;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
@@ -66,11 +67,29 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 		c.gridy++;
 		add(bSlider, c);
 		
-//		repaint();
-		
-
+		setPreferredSize(new Dimension(300, 100));
+		setBackground(Color.white);
+		setVisible(true);
+	}
+	@Override
+	public void paintComponents(Graphics g) {
+		g = getGraphics();
+		if(g == null)
+			return;
+		super.paintComponents(g);
+	    g.setColor(new Color(rSlider.getValue(), gSlider.getValue(), bSlider.getValue()));  
+	    g.fillRect(rSlider.getX()+ rSlider.getWidth() +5,getHeight()/2-20,40,40); 
 	}
 	
+	
+	public void draw(Graphics g) {  
+		paintComponents(g); //TODO: Find out wtf is wrong, and replace it with repaint()
+		
+	}
+
+	public void update(double dt) {
+		
+	}
 	
 	private class SliderListener implements ActionListener {
 
@@ -82,16 +101,7 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 		
 	}
 	
-	public void update(double dt) {
-	}
 
-
-	@Override
-	public void draw(Graphics g) {  
-		Graphics2D g2d = (Graphics2D) getGraphics().create();
-	     g2d.setColor(new Color(rSlider.getValue(), gSlider.getValue(), bSlider.getValue()));  
-	     g2d.fillRect(200,40,50,50);  
-	}
 
 
 	@Override

@@ -2,8 +2,8 @@ package graphics;
 
 import interfaces.Drawable;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.GradientPaint;
@@ -12,20 +12,21 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
-import java.beans.PropertyVetoException;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class ListItem extends JPanel implements MouseListener, Drawable{
 
@@ -39,17 +40,25 @@ public class ListItem extends JPanel implements MouseListener, Drawable{
 	private final int shapeWidth = 40;
 	private final int shapeHeight = 40;
 	
+	private int relativeX;
+	private int relativeY;
+	
 	private final boolean ignore;
+	
+	private Point mousePosition;
 	
 	private Shape shape;
 	
 	private Color c1;
 	private Color c2;
 	
-	public ListItem (String pathName, String title, String actionCommand, boolean ignore) {
+	private JComponent caller;
+	
+	public ListItem (String pathName, String title, String actionCommand, boolean ignore, JComponent caller) {
 		this.pathName = pathName;
 		this.title = title;
 		this.actionCommand = actionCommand;
+		this.caller = caller;
 		setBackground(Color.white);
 		addMouseListener(this);
 		GridBagLayout gbl = new GridBagLayout();
@@ -59,16 +68,18 @@ public class ListItem extends JPanel implements MouseListener, Drawable{
 		c1 = new Color(255,100,255, 150);
 		c2 = new Color(150,200,255);
 		this.ignore = ignore;
-//		revalidate();
+		revalidate();
+		repaint();
 	}
 	
-	public ListItem(Shape shape, String title, String actionCommand) {
-		this("", title, actionCommand, true);
+	public ListItem(Shape shape, String title, String actionCommand, JComponent caller) {
+		this("", title, actionCommand, true, caller);
 		this.shape = shape;
 	}
 	
 	@Override
 	protected void paintComponent(Graphics g) {
+		
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setPaint(new GradientPaint(new Point(0, 0), c1,
@@ -123,6 +134,7 @@ public class ListItem extends JPanel implements MouseListener, Drawable{
 		c.ipadx = 100;
 		c.ipady = 60;
 		add(label, c);
+		addMouseMotionListener(MainFrame.mouseListener);
 	}
 	
 	
@@ -146,7 +158,6 @@ public class ListItem extends JPanel implements MouseListener, Drawable{
 		setBackground(new Color(63, 152, 207));
 		label.setForeground(Color.white);
 		setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); 
-
 		
 	}
 
@@ -159,10 +170,15 @@ public class ListItem extends JPanel implements MouseListener, Drawable{
 
 	public void mousePressed(MouseEvent arg0) {
 		// TODO Create bevel effect
+		mousePosition = arg0.getPoint();
 		c2 = new Color(255,255,255, 150);
 		c1 = new Color(150,200,255);
 		setBorder(BorderFactory.createSoftBevelBorder(Color.OPAQUE, Color.gray, Color.black));
-		
+		if(MainFrame.mouseListener.btnFromSource) {
+			MainFrame.mouseListener.mousePosition = new Point(caller.getLocation().x, caller.getLocation().y);
+		}
+		MainFrame.mouseListener.relativeToSource = true;
+		MainFrame.mouseListener.externalSource = this;
 	}
 
 	public void mouseReleased(MouseEvent arg0) {
@@ -170,7 +186,14 @@ public class ListItem extends JPanel implements MouseListener, Drawable{
 		c1 = new Color(255,150,255, 150);
 		c2 = new Color(150,200,255);
 		setBorder(BorderFactory.createSoftBevelBorder(Color.OPAQUE, Color.BLACK, Color.gray));
-		
+		MainFrame.mouseListener.relativeToSource = false;
+		MainFrame.mouseListener.btnFromSource = false;
+		MainFrame.mouseListener.waitForRelease = false;
+		MainFrame.mouseListener.externalSource = null;
+	}
+	
+	public JLabel getLabel() {
+		return label;
 	}
 
 }

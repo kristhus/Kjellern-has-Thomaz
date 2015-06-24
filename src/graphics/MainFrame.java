@@ -1,5 +1,6 @@
 package graphics;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -24,6 +25,7 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.DesktopPaneUI;
 
+import listeners.CanvasMouseListener;
 import listeners.KeyBoardListener;
 import data.Updater;
 import reader.Reader;
@@ -35,13 +37,15 @@ public class MainFrame extends JFrame{
 	public static Reader reader;
 	public static Updater updater;
 	
-	private static final boolean DEV_MODE = false;
+	private static final boolean DEV_MODE = true;
 	private static boolean DEV_MODE_INITIALIZED = false;
 	private static KeyBoardListener keyBoardListener;
 	public static final int FPS = 30;
 	
 	public static LeftPanel leftPanel;
 	public static RightPanel rightPanel;
+	
+	public static CanvasMouseListener mouseListener = new CanvasMouseListener();
 	
 	public static void main(String args[]) {
 		mainFrame = new MainFrame();
@@ -54,19 +58,20 @@ public class MainFrame extends JFrame{
 	public MainFrame() {
 		// SPLASH SCREEN  TODO: Add loading sequence
 		super();
-		JWindow window = new JWindow();
-		window.getContentPane().add(new JLabel("", new ImageIcon(getClass().getResource("/splash.png")), SwingConstants.CENTER));
-		window.setBounds(Toolkit.getDefaultToolkit().getScreenSize().width/2-200, Toolkit.getDefaultToolkit().getScreenSize().height/2-100, 400, 200);
-		window.setVisible(true);
-		try {
-		    Thread.sleep(2000);
-		} catch (InterruptedException e) {
-		    e.printStackTrace();
-		}
-		window.setVisible(false);
-		window.dispose();
 		
-
+		if(!DEV_MODE) {
+			JWindow window = new JWindow();
+			window.getContentPane().add(new JLabel("", new ImageIcon(getClass().getResource("/splash.png")), SwingConstants.CENTER));
+			window.setBounds(Toolkit.getDefaultToolkit().getScreenSize().width/2-200, Toolkit.getDefaultToolkit().getScreenSize().height/2-100, 400, 200);
+			window.setVisible(true);
+			try {
+			    Thread.sleep(2000);
+			} catch (InterruptedException e) {
+			    e.printStackTrace();
+			}
+			window.setVisible(false);
+			window.dispose();
+		}
 		
 		try {
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -82,42 +87,44 @@ public class MainFrame extends JFrame{
 		}
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setPreferredSize(new Dimension(1200, 900));
-		setPreferredSize(new Dimension(1400, 800));
 		JFrame.setDefaultLookAndFeelDecorated(true);
 	//	mainFrame.setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("")));  //Need an icon
-		setVisible(true);
 		keyBoardListener = new KeyBoardListener();
 		addKeyListener(keyBoardListener);
 		mainPanel = new JDesktopPane();
 		mainPanel.addKeyListener(MainFrame.getKeyBoardListener());
 		mainPanel.setOpaque(true);       
         mainPanel.setFocusable(true);
-        add(mainPanel);
+        setContentPane(mainPanel);
         leftPanel = new LeftPanel();
         rightPanel = new RightPanel();
         mainPanel.add(leftPanel, new Integer(1));
-        mainPanel.add(rightPanel, new Integer(1));
-		pack();
-		revalidate();
-        
+        mainPanel.add(rightPanel, new Integer(2));
+		setBounds(0,0,1400, 800);
 		CreateMenu cm = new CreateMenu();
 		setJMenuBar(cm.createMenu());
+		revalidate();
+		setVisible(true);
 	}
 	
-	public static void draw(Graphics g) {
-		getRightPanel().draw(g);
+	@Override
+	public void paintComponents(Graphics g) {
+		System.out.println("wat");
 		if(DEV_MODE) {
 			int fontSize = 14;
 			Graphics2D g2d = (Graphics2D) g.create();
-		    	g2d.setColor(new Color(100,90,100, 5));
-		    	g2d.fillRect(0, 50, 100, 50);
+		    g2d.setColor(new Color(100,90,100, 5));
+		    g2d.fillRect(0, 50, 100, 50);
 		    g2d.setFont(new Font("TimesRoman", Font.PLAIN, fontSize));
 		    g2d.setColor(Color.red);
 		//	g2d.drawString("X: " + mouseX, 20, 70);
 		//	g2d.drawString("Y: " + mouseY, 20, 95);
 			g2d.dispose();
 		}
+	}
+	
+	public static void draw(Graphics g) {
+		getRightPanel().draw(g);
 	}
 	
 	public static void update(double dt) {

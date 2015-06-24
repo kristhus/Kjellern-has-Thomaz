@@ -12,7 +12,7 @@ import java.util.Vector;
 import moveable.Collidable;
 import constants.EnvironmentConstants;
 
-public abstract class PhysicsObject implements Collidable{
+public abstract class PhysicsObject implements Collidable{ //TODO: Try to implement some type of shape/abstract
 	
 	//Should be implemented by a ApplicationObject / GameObject etc.
 	
@@ -344,6 +344,30 @@ public abstract class PhysicsObject implements Collidable{
 		Rectangle2D.Float r2 = new Rectangle2D.Float();
 		r2.setRect(p2.getX(), p2.getY(), obj.getWidth(), obj.getHeight());
 		return r1.intersects(r2);
+	}
+	
+	public void goesOutOfBounds(Rectangle bounds) {
+		// TODO Auto-generated method stub
+		int boundsX = bounds.x;
+		int boundsY = bounds.y;
+		int boundsX2 = bounds.x+bounds.width;
+		int boundsY2 = bounds.y+bounds.height;
+		if(boundsX>getX()+getWidth()) {
+			//OUT ON LEFT
+			setVelocityX(getVelocityX()*-1);
+		}
+		if(boundsY > getY()+getHeight()) {
+			//OUTSIDE UP
+			setVelocityY(getVelocityY()*-1);
+		}
+		if(boundsX2 < getX()) {
+			//OUT RIGHT
+			setVelocityX(getVelocityX()*-1);
+		}
+		if(boundsY2 < getY()){
+			//OUT DOWN
+			setVelocityY(getVelocityY()*-1);
+		}
 		
 	}
 	

@@ -22,14 +22,14 @@ TerminalVelocity -- || --
 
 public class Particle extends PhysicsObject{
 
-	public float velocity = 5; //MaxSpeed
+	public float velocity = 2; //MaxSpeed
 	public int opacity = 255;
-	public int deltaOpacity = 1; //(multiplum of 5, 3 or 17)
+	public double deltaOpacity = 1; //(multiplum of 5, 3 or 17)
 	private boolean gravity;
 	public double life;
-	private int deltaRed = 20;
-	private int deltaGreen = 20;
-	private int deltaBlue = 20;
+	private int deltaRed = 10;
+	private int deltaGreen = 10;
+	private int deltaBlue = 10;
 	
 	public Color color;
 
@@ -44,6 +44,8 @@ public class Particle extends PhysicsObject{
 		public Particle(int width, int height, ImageIcon sprite, Color c, int x, int y, boolean randomDirection) {
 			setWidth(width);
 			setHeight(height);
+			setDensity(0.005);
+			setWeight(getDensity()*width*height);
 			this.sprite = sprite;
 			color = c;
 			setX(x);
@@ -162,5 +164,6 @@ public class Particle extends PhysicsObject{
 		public Rectangle.Float getBounds() {
 			return new Rectangle.Float((float)getX(), (float)getY(), (float)getWidth(), (float)getHeight());
 		}
+
 
 }

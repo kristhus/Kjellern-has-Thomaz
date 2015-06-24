@@ -21,6 +21,10 @@ public class Box extends PhysicsObject {
 		setVelocityY(0);
 		setWeight(10);
 	}
+	public Box(Rectangle bounds) {
+		this((int) bounds.getX(),(int) bounds.getY(),(int) bounds.getWidth(),(int) bounds.getHeight());
+	}
+	
 	
 	@Override
 	public boolean collided(Rectangle rect) {
@@ -33,5 +37,8 @@ public class Box extends PhysicsObject {
 		updatePosition(dt);
 	}
 
+	public String toString() {
+		return ""+getBounds();
+	}
 
 }
