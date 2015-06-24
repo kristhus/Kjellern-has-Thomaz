@@ -140,13 +140,13 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 		Point intersection = findIntersectedPoint(objectLine, intersectionLine);
 		
 		
-		System.out.println("this:    " + thisPoint);
-		System.out.println("EdgeA:   "  + edgeA);
-		System.out.println("EdgeB:   "  + edgeB);
-		System.out.println("thisT:   " + thisTowards);
-		System.out.println("inter:   " + intersection);
-		System.out.println("vx   :   " + getVelocityX());
-		System.out.println("vy   :   " + getVelocityY());
+//		System.out.println("this:    " + thisPoint);
+//		System.out.println("EdgeA:   "  + edgeA);
+//		System.out.println("EdgeB:   "  + edgeB);
+//		System.out.println("thisT:   " + thisTowards);
+//		System.out.println("inter:   " + intersection);
+//		System.out.println("vx   :   " + getVelocityX());
+//		System.out.println("vy   :   " + getVelocityY());
 		double b = thisPoint.distance(intersection); // thisToIntersection
 		//double a = Math.min(thisPoint.distance(edgeA),thisPoint.distance(edgeB)); //thisToA //??????
 		double a = thisPoint.distance(edgeA);
@@ -180,15 +180,15 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 		double setY = getMomentumCollisionY(obj);
 		obj.setVelocityX(obj.getMomentumCollisionX(this));
 		obj.setVelocityY(obj.getMomentumCollisionY(this));
-		System.out.println("setX: " + setX);
-		System.out.println("setY: " + setY);
+//		System.out.println("setX: " + setX);
+//		System.out.println("setY: " + setY);
 		setVelocityX(-setX);
 		setVelocityY(-setY);
-		System.out.println("vx2   :   " + getVelocityX());
-		System.out.println("vy2   :   " + getVelocityY());
-		System.out.println("ob.vx2:   " + obj.getVelocityX());
-		System.out.println("ob.vy2:   " + obj.getVelocityY());
-		System.out.println("===================================");
+//		System.out.println("vx2   :   " + getVelocityX());
+//		System.out.println("vy2   :   " + getVelocityY());
+//		System.out.println("ob.vx2:   " + obj.getVelocityX());
+//		System.out.println("ob.vy2:   " + obj.getVelocityY());
+//		System.out.println("===================================");
 		/*
 		System.out.println("this:    " + thisPoint);
 		System.out.println("EdgeA:   "  + edgeA);
@@ -352,19 +352,19 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 		int boundsY = bounds.y;
 		int boundsX2 = bounds.x+bounds.width;
 		int boundsY2 = bounds.y+bounds.height;
-		if(boundsX>getX()+getWidth()) {
+		if(boundsX>getX()) {
 			//OUT ON LEFT
 			setVelocityX(getVelocityX()*-1);
 		}
-		if(boundsY > getY()+getHeight()) {
-			//OUTSIDE UP
-			setVelocityY(getVelocityY()*-1);
-		}
-		if(boundsX2 < getX()) {
+		if(boundsX2 < getX() + getWidth()) {
 			//OUT RIGHT
 			setVelocityX(getVelocityX()*-1);
 		}
-		if(boundsY2 < getY()){
+		if(boundsY > getY()) {
+			//OUTSIDE UP
+			setVelocityY(getVelocityY()*-1);
+		}
+		if(boundsY2 < getY() + getHeight()){
 			//OUT DOWN
 			setVelocityY(getVelocityY()*-1);
 		}

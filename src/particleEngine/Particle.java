@@ -27,9 +27,9 @@ public class Particle extends PhysicsObject{
 	public double deltaOpacity = 1; //(multiplum of 5, 3 or 17)
 	private boolean gravity;
 	public double life;
-	private int deltaRed = 10;
-	private int deltaGreen = 10;
-	private int deltaBlue = 10;
+	private int deltaRed = 7;
+	private int deltaGreen = 7;
+	private int deltaBlue = 7;
 	
 	public Color color;
 

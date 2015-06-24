@@ -69,7 +69,6 @@ public class ParticleCluster {
 		// Iterate from the last element, (last added) maybe
 		ConcurrentArrayList<Particle> tmpParticles = new ConcurrentArrayList<Particle>();
 		boolean sublist = false;
-		int sublistIndex = 0;
 		Iterator<Particle> tmp = getParticles().iterator();
 		while(tmp.hasNext()) {
 			//TODO: IF OUT OF BOUNDS DO SOMETHING
@@ -106,7 +105,6 @@ public class ParticleCluster {
 				}
 			}
 		}
-		
 		
 		if(deltaTimeDecimal+particlesPerUpdate >=1) {
 			deltaTimeDecimal=particlesPerUpdate;
