@@ -15,9 +15,11 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 
 import javax.swing.JPanel;
 
+import data.ConcurrentArrayList;
 import particleEngine.Box;
 import particleEngine.Particle;
 import particleEngine.ParticleCluster;
@@ -34,7 +36,7 @@ public class ParticleCanvas extends JPanel implements Drawable{
 	public ParticleCanvas() {
 		
 		
-		cluster = new ParticleCluster(200000, 10000, this);
+		cluster = new ParticleCluster(100000, 1000, this);
 		collisionBoxes = new ArrayList<Box>();
 		
 		BorderLayout bl = new BorderLayout();
@@ -58,13 +60,13 @@ public class ParticleCanvas extends JPanel implements Drawable{
 			g.setColor(Color.yellow);
 			g.fillRect((int)tmpBox.getX(),(int)tmpBox.getY(),(int) tmpBox.getWidth(),(int) tmpBox.getHeight());
 		}
-		ArrayList<Particle> c = cluster.getParticles();
-		try{
-   	 	for(Particle p : c) {
+		ConcurrentArrayList<Particle> c = cluster.getParticles();
+			Iterator<Particle> tmp = c.iterator();
+		while(tmp.hasNext()){
+			Particle p = tmp.next();
 			g.setColor(p.color);
 			g.fillRect((int) p.getX(), (int) p.getY(), (int)p.getWidth(), (int)p.getHeight());
-   	 	}
-		}catch(ConcurrentModificationException e){System.out.println("...");}//WHAT THE ACTUAL FUCK SWING???
+   	 		}
    	 	// COLLIDABLES
    	 	for(Box b : collisionBoxes) {
    	 		g.setColor(b.color);

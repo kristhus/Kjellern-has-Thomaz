@@ -10,9 +10,11 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import physics.PhysicsObject;
 import constants.EnvironmentConstants;
+import data.ConcurrentArrayList;
 
 
 
@@ -20,7 +22,7 @@ public class ParticleCluster {
 
 	private int particleLimit;
 	private int particlesPerSecond;
-	private ArrayList<Particle> particles;
+	private ConcurrentArrayList<Particle> particles;
 	private float particlesPerUpdate;
 	private double lifetime;
 	
@@ -31,7 +33,7 @@ public class ParticleCluster {
 
 	
 	public ParticleCluster(int particleLimit, int particlesPerSecond, ParticleCanvas caller) {
-		particles = new ArrayList<Particle>();
+		particles = new ConcurrentArrayList<Particle>();
 		this.particleLimit = particleLimit;
 		this.particlesPerSecond = particlesPerSecond;
 		this.caller = caller;
@@ -65,11 +67,13 @@ public class ParticleCluster {
 		// FIX THIS PART    Add initialSpeed for drag and release effect???
 		// FIX: REMOVE THE AMOUNT OF PARTICLES TO BE ADDED DURING THIS UPDATE
 		// Iterate from the last element, (last added) maybe
-		ArrayList<Particle> tmpParticles = new ArrayList<Particle>();
+		ConcurrentArrayList<Particle> tmpParticles = new ConcurrentArrayList<Particle>();
 		boolean sublist = false;
 		int sublistIndex = 0;
-		for(Particle p : particles) {
+		Iterator<Particle> tmp = getParticles().iterator();
+		while(tmp.hasNext()) {
 			//TODO: IF OUT OF BOUNDS DO SOMETHING
+			Particle p = tmp.next();
 			p.goesOutOfBounds(new Rectangle(0,0,caller.getWidth(), caller.getHeight()));
 			p.update(dt);
 			if(p.life < lifetime && particles.size() < particleLimit) {
@@ -79,12 +83,14 @@ public class ParticleCluster {
 			}
 		}
 		if(sublist && deltaTimeDecimal+particlesPerUpdate < particles.size()) { // UUh, what is this?
-			particles = new ArrayList<Particle>(particles.subList((int) (deltaTimeDecimal+particlesPerUpdate), particles.size())); //Correctly removes particles
+			setParticles(new ConcurrentArrayList<Particle>(particles.subList((int) (deltaTimeDecimal+particlesPerUpdate), particles.size()))); //Correctly removes particles
 		}else{
-			particles = tmpParticles;
+			setParticles(tmpParticles);
 		}
 		
-		for(Particle p : particles) {
+		Iterator<Particle> tmp2 = getParticles().iterator();
+		while(tmp2.hasNext()) {
+			Particle p = tmp2.next();
 			// Move this code beneath if(p.life < lifetime && particles.size() < particleLimit)
 			for(PhysicsObject b : caller.getCollisionBoxes()) {
 				if(p.willCollide(b, p.getNextVelocityY(), 0)) {
@@ -108,8 +114,11 @@ public class ParticleCluster {
 	}
 	
 	
-	public synchronized ArrayList<Particle> getParticles() { // Should probably synchronize all access to particles because poop
+	public ConcurrentArrayList<Particle> getParticles() { // Should probably synchronize all access to particles because poop
 		return particles;
+	}
+	public void setParticles(ConcurrentArrayList<Particle> particles) {
+		this.particles = particles;
 	}
 
 }
