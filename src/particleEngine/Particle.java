@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
 
 import javax.swing.ImageIcon;
 
@@ -156,13 +157,19 @@ public class Particle extends PhysicsObject{
 		}
 		
 		@Override
-		public boolean collided(Rectangle rect) {
+		public boolean collided(Shape shape) {
 			// TODO Auto-generated method stub
 			return false;
 		}
 		
 		public Rectangle.Float getBounds() {
 			return new Rectangle.Float((float)getX(), (float)getY(), (float)getWidth(), (float)getHeight());
+		}
+
+		@Override
+		public boolean outOfBounds(int x, int y) {
+			// TODO Auto-generated method stub
+			return false;
 		}
 
 

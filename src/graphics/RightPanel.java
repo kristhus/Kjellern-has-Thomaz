@@ -30,6 +30,8 @@ import shapeCreator.CreatorCanvas;
 import particleEngine.ColorChooser;
 import listeners.CanvasMouseListener;
 import listeners.KeyBoardListener;
+import moveable.GameObject;
+import moveable.MoveCanvas;
 import moveable.Player;
 import dragDrop.DragAndDrop;
 import dragDrop.DragCanvas;
@@ -104,8 +106,9 @@ public class RightPanel extends JInternalFrame{
 			break;
 		
 		case "move":
-			Player player = new Player(10,10,0,0,5,5);
-			internalPane.add(player);
+//			Player player = new Player();
+			MoveCanvas mc = new MoveCanvas();
+			internalPane.add(mc);
 			drawableComponents = true;
 			break;
 		case "create":

@@ -1,5 +1,6 @@
 package dragDrop;
 
+import graphics.MainFrame;
 import interfaces.Drawable;
 
 import java.awt.BorderLayout;

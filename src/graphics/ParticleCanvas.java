@@ -96,7 +96,7 @@ public class ParticleCanvas extends JPanel implements Drawable{
 				System.out.println("________________");
 			}catch(NullPointerException e){
 //				e.printStackTrace();
-				//TODO; Fiks na jævla erroren
+				//TODO; Fiks na jï¿½vla erroren
 			}finally {
 				//System.exit(0);
 			}

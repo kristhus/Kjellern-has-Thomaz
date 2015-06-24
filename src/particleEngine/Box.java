@@ -2,6 +2,7 @@ package particleEngine;
 
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.Shape;
 
 import physics.PhysicsObject;
 
@@ -27,7 +28,7 @@ public class Box extends PhysicsObject {
 	
 	
 	@Override
-	public boolean collided(Rectangle rect) {
+	public boolean collided(Shape shape) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -39,6 +40,11 @@ public class Box extends PhysicsObject {
 
 	public String toString() {
 		return ""+getBounds();
+	}
+	@Override
+	public boolean outOfBounds(int x, int y) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
