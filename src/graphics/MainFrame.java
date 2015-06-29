@@ -6,12 +6,17 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
@@ -20,6 +25,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JWindow;
+import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -37,13 +43,14 @@ public class MainFrame extends JFrame{
 	public static Reader reader;
 	public static Updater updater;
 	
-	private static final boolean DEV_MODE = true;
+	public static final boolean DEV_MODE = true;
 	private static boolean DEV_MODE_INITIALIZED = false;
 	private static KeyBoardListener keyBoardListener;
 	public static final int FPS = 30;
 	
 	public static LeftPanel leftPanel;
 	public static RightPanel rightPanel;
+	private WindowToolbar windowToolbar;
 	
 	public static CanvasMouseListener mouseListener = new CanvasMouseListener();
 	
@@ -86,30 +93,43 @@ public class MainFrame extends JFrame{
 			} catch (Exception ex) {}
 		}
 		
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		JFrame.setDefaultLookAndFeelDecorated(true);
-	//	mainFrame.setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("")));  //Need an icon
+//		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
+//		setExtendedState(JFrame.MAXIMIZED_BOTH);  //Fullscreen
+		setUndecorated(true);
+		
+		BorderLayout bl = new BorderLayout();
+		setLayout(bl);
+		windowToolbar = new WindowToolbar(this);
+		windowToolbar.setBackground(Color.WHITE);
+		windowToolbar.setPreferredSize(new Dimension(1400,32));
+		add(windowToolbar, bl.NORTH);
+		
+		
+		
+		
+		setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/icon/appIcon.png")));  //Need an icon
 		keyBoardListener = new KeyBoardListener();
 		addKeyListener(keyBoardListener);
 		mainPanel = new JDesktopPane();
 		mainPanel.addKeyListener(MainFrame.getKeyBoardListener());
 		mainPanel.setOpaque(true);       
         mainPanel.setFocusable(true);
-        setContentPane(mainPanel);
+        add(mainPanel, bl.CENTER);
         leftPanel = new LeftPanel();
         rightPanel = new RightPanel();
         mainPanel.add(leftPanel, new Integer(1));
         mainPanel.add(rightPanel, new Integer(2));
 		setBounds(0,0,1400, 800);
 		CreateMenu cm = new CreateMenu();
-		setJMenuBar(cm.createMenu());
+//		setJMenuBar(cm.createMenu());
 		revalidate();
 		setVisible(true);
+//		pack();
 	}
 	
 	@Override
 	public void paintComponents(Graphics g) {
-		System.out.println("wat");
 		if(DEV_MODE) {
 			int fontSize = 14;
 			Graphics2D g2d = (Graphics2D) g.create();
@@ -117,12 +137,15 @@ public class MainFrame extends JFrame{
 		    g2d.fillRect(0, 50, 100, 50);
 		    g2d.setFont(new Font("TimesRoman", Font.PLAIN, fontSize));
 		    g2d.setColor(Color.red);
+		    
 		//	g2d.drawString("X: " + mouseX, 20, 70);
 		//	g2d.drawString("Y: " + mouseY, 20, 95);
 			g2d.dispose();
 		}
 	}
+
 	
+
 	public static void draw(Graphics g) {
 		getRightPanel().draw(g);
 	}

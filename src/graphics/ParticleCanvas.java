@@ -35,7 +35,7 @@ public class ParticleCanvas extends JPanel implements Drawable{
 	public ParticleCanvas() {
 		
 		
-		cluster = new ParticleCluster(100000, 1000, this);
+		cluster = new ParticleCluster(1000, 100, this);
 		collisionBoxes = new ArrayList<Box>();
 		
 		BorderLayout bl = new BorderLayout();

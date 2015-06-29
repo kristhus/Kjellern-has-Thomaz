@@ -5,7 +5,9 @@ import interfaces.Drawable;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -33,6 +35,7 @@ import listeners.KeyBoardListener;
 import moveable.GameObject;
 import moveable.MoveCanvas;
 import moveable.Player;
+import data.Updater;
 import dragDrop.DragAndDrop;
 import dragDrop.DragCanvas;
 
@@ -119,6 +122,7 @@ public class RightPanel extends JInternalFrame{
 		}
 		repaint();
 	}
+	
 
 	public void draw(Graphics g) {
 		internalPane.draw(g);
@@ -135,6 +139,14 @@ public class RightPanel extends JInternalFrame{
 
 	public class InternalPanel extends JPanel implements Drawable{
 		
+		
+		@Override
+		public void paintComponents(Graphics g) {
+			
+			
+		}
+		
+		
 		@Override
 		public void draw(Graphics g) {
 			// TODO Auto-generated method stub
@@ -143,6 +155,19 @@ public class RightPanel extends JInternalFrame{
 					((Drawable) c).draw(getGraphics());  // I want the children to have acces to the entire graphics of this un
 				}
 			}
+			if(MainFrame.DEV_MODE) {
+				int fontSize = 14;
+				Graphics2D g2d = (Graphics2D) g.create();
+			    g2d.setColor(new Color(100,90,100, 5));
+			    g2d.fillRect( MainFrame.getMainPanel().getWidth()-40, 60, 100, 50);
+			    g2d.setFont(new Font("TimesRoman", Font.PLAIN, fontSize));
+			    g2d.setColor(Color.red);
+			    g2d.drawString("FPS: " + Updater.actualFPS, MainFrame.getMainPanel().getWidth()-40,90);
+			//	g2d.drawString("X: " + mouseX, 20, 70);
+			//	g2d.drawString("Y: " + mouseY, 20, 95);
+				g2d.dispose();
+			}
+			
 		}
 		public void update(double dt) {
 			for(Component c : getComponents()) {
