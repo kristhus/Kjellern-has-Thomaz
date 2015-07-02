@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
@@ -76,7 +77,7 @@ public class WindowToolbar extends JPanel implements MouseMotionListener, MouseL
 		tmp3.add(close);
 		tmp3.setBackground(Color.white);
 		add(tmp3);
-		setBorder(BorderFactory.createMatteBorder(1, 1, 0, 1, Color.black));
+//		setBorder(BorderFactory.createMatteBorder(1, 1, 0, 1, Color.black));
 		SpringLayout spl = new SpringLayout();
 		setLayout(spl);
 		spl.putConstraint(spl.EAST, tmp3, 0, spl.EAST, this);
@@ -88,26 +89,40 @@ public class WindowToolbar extends JPanel implements MouseMotionListener, MouseL
 		
 		addMouseMotionListener(new ClickAndDrag());
 		addMouseListener(new ClickAndDrag());
-		
+		setBackground(new Color(20,20,20,20));
 		prevLocation = new Point(0,0);
+		prevSize = mainFrame.getSize();
 	}
 
 	
 	@Override
 	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        int w = getWidth();
-        int h = getHeight();
-        Color color1 = Color.white;
-        Color color2 = new Color(200,200,200);
-        GradientPaint gp = new GradientPaint(0, h/2, color1, 0, h, color2);
-        g2d.setPaint(gp);
-        g2d.fillRect(0, 0, w, h);
+//		super.paintComponent(g);
+//		Graphics2D g2d = (Graphics2D) g;
+//        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+//        int w = getWidth();
+//        int h = getHeight();
+//        Color color1 = new Color(255,255,255);
+//        Color color2 = new Color(200,200,200);
+//        GradientPaint gp = new GradientPaint(0, h/2, color1, 0, h, color2);
+//        g2d.setPaint(gp);
+//        g2d.fillRect(0, 0, w, h);
+
 	}
 	
-	
+	public void draw(Graphics g) {
+//		g = getGraphics();
+//		final int R = 240;
+//        final int G = 240;
+//        final int B = 240;
+//		Paint p =
+//                new GradientPaint(0.0f, 0.0f, new Color(R, G, B, 0),
+//                    0.0f, getHeight(), new Color(R, G, B, 255), true);
+//            Graphics2D g2d = (Graphics2D)g;
+//            g2d.setPaint(p);
+//            g2d.fillRect(0, 0, getWidth(), getHeight());
+//            g2d.dispose();
+	}
 
 	@Override
 	public void mouseDragged(MouseEvent arg0) {
@@ -186,13 +201,15 @@ public class WindowToolbar extends JPanel implements MouseMotionListener, MouseL
 		int scrW = Toolkit.getDefaultToolkit().getScreenSize().width;
 		getToolkit();
 		int scrH = Toolkit.getDefaultToolkit().getScreenSize().height;
-		if(prevLocation.x >= scrW) {
+		
+		
+		if(mainFrame.getWidth() >= scrW) {
 			System.out.println("BYTT TIL MINIMIERT");
 			mainFrame.setBounds(prevLocation.x, prevLocation.y, prevSize.width, prevSize.height);
 		}
 		else {
+			prevSize = mainFrame.getSize();
 			prevLocation = getLocationOnScreen();
-			prevSize = getSize();
 			mainFrame.setBounds(0,0,scrW,scrH);
 		}
 	}
@@ -215,7 +232,6 @@ public class WindowToolbar extends JPanel implements MouseMotionListener, MouseL
 		@Override
 		public void mouseMoved(MouseEvent arg0) {
 			// TODO Auto-generated method stub
-			
 		}
 
 		@Override

@@ -1,14 +1,18 @@
 package graphics;
 
+import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.Window;
@@ -36,7 +40,7 @@ import listeners.KeyBoardListener;
 import data.Updater;
 import reader.Reader;
 
-public class MainFrame extends JFrame{
+public class MainFrame extends JFrame implements MouseMotionListener, MouseListener{
 	
 	public static MainFrame mainFrame;
 	public static JDesktopPane mainPanel;
@@ -50,9 +54,15 @@ public class MainFrame extends JFrame{
 	
 	public static LeftPanel leftPanel;
 	public static RightPanel rightPanel;
-	private WindowToolbar windowToolbar;
+	private static WindowToolbar windowToolbar;
 	
 	public static CanvasMouseListener mouseListener = new CanvasMouseListener();
+	
+	
+	private boolean resizeR2L;
+	private boolean resizeL2R;
+	private boolean resizeT2B;
+	private boolean resizeB2T;
 	
 	public static void main(String args[]) {
 		mainFrame = new MainFrame();
@@ -105,8 +115,8 @@ public class MainFrame extends JFrame{
 		windowToolbar.setPreferredSize(new Dimension(1400,32));
 		add(windowToolbar, bl.NORTH);
 		
-		
-		
+		getRootPane().setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, new Color(255, 150,150, 100)));
+		getRootPane().setOpaque(false);
 		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/icon/appIcon.png")));  //Need an icon
 		keyBoardListener = new KeyBoardListener();
@@ -125,11 +135,16 @@ public class MainFrame extends JFrame{
 //		setJMenuBar(cm.createMenu());
 		revalidate();
 		setVisible(true);
+		
+		addMouseMotionListener(this);
+		addMouseListener(this);
+		 setBackground(new Color(0,0,0,0));
 //		pack();
 	}
 	
 	@Override
 	public void paintComponents(Graphics g) {
+		super.paintComponents(g);
 		if(DEV_MODE) {
 			int fontSize = 14;
 			Graphics2D g2d = (Graphics2D) g.create();
@@ -142,12 +157,22 @@ public class MainFrame extends JFrame{
 		//	g2d.drawString("Y: " + mouseY, 20, 95);
 			g2d.dispose();
 		}
+		final int R = 240;
+        final int G = 240;
+        final int B = 240;
+		Paint p =
+                new GradientPaint(0.0f, 0.0f, new Color(R, G, B, 0),
+                    0.0f, getHeight(), new Color(R, G, B, 255), true);
+            Graphics2D g2d = (Graphics2D)g;
+            g2d.setPaint(p);
+            g2d.fillRect(0, 0, getWidth(), getHeight());
 	}
 
 	
 
 	public static void draw(Graphics g) {
 		getRightPanel().draw(g);
+		windowToolbar.draw(g);
 	}
 	
 	public static void update(double dt) {
@@ -179,6 +204,81 @@ public class MainFrame extends JFrame{
 	
 	public static KeyBoardListener getKeyBoardListener(){
 		return keyBoardListener;
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent arg0) {
+		// TODO Add support for dragging corners
+		if(resizeR2L)
+			setBounds(getLocation().x, getLocation().y, arg0.getXOnScreen()-getLocation().x+5, getHeight());
+		if(resizeL2R) {
+			int oldX = getX();
+			setLocation(arg0.getXOnScreen(), getLocation().y);
+			setSize(getWidth() + oldX-arg0.getXOnScreen(), getHeight());
+//			setBounds(getLocation().x, getLocation().y, getWidth() + oldX-getLocation().x, getHeight());
+//			System.out.println(oldX-getLocation().x);
+		}
+		if(resizeB2T) {
+			setSize(getWidth(), arg0.getYOnScreen()-getLocation().y);
+		}if(resizeT2B) {
+			int oldY = getY();
+			setLocation(getLocation().x,arg0.getYOnScreen());
+			setSize(getWidth(), getHeight() + oldY-arg0.getYOnScreen());
+		}
+	}
+	
+	@Override
+	public void mouseMoved(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		if((arg0.getXOnScreen() < getLocation().x + getWidth() && arg0.getXOnScreen() > getLocation().x + getWidth()-10) ||
+				(arg0.getXOnScreen() < getLocation().x + 10 && arg0.getXOnScreen() > getLocation().x)){
+			setCursor(new Cursor(Cursor.E_RESIZE_CURSOR));
+		}
+		else if((arg0.getYOnScreen() < getLocation().y + getHeight() && arg0.getYOnScreen() > getLocation().y + getHeight()-10) ||
+				(arg0.getYOnScreen() < getLocation().y + 10 && arg0.getYOnScreen() > getLocation().y)) {
+			setCursor(new Cursor(Cursor.N_RESIZE_CURSOR));
+		}else
+			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		if(arg0.getXOnScreen() < getLocation().x + getWidth() && arg0.getXOnScreen() > getLocation().x + getWidth()-10)
+			resizeR2L = true;
+		else if (arg0.getXOnScreen() < getLocation().x + 10 && arg0.getXOnScreen() > getLocation().x)
+			resizeL2R = true;
+		else if (arg0.getYOnScreen() < getLocation().y + getHeight() && arg0.getYOnScreen() > getLocation().y + getHeight()-10)
+			resizeB2T = true;
+		else if (arg0.getYOnScreen() < getLocation().y + 10 && arg0.getYOnScreen() > getLocation().y)
+			resizeT2B = true;
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		resizeT2B = false;
+		resizeB2T = false;
+		resizeL2R = false;
+		resizeR2L = false;
 	}
 	
 }

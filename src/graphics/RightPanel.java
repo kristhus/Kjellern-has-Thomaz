@@ -158,11 +158,11 @@ public class RightPanel extends JInternalFrame{
 			if(MainFrame.DEV_MODE) {
 				int fontSize = 14;
 				Graphics2D g2d = (Graphics2D) g.create();
-			    g2d.setColor(new Color(100,90,100, 5));
-			    g2d.fillRect( MainFrame.getMainPanel().getWidth()-40, 60, 100, 50);
+			    g2d.setColor(new Color(100,90,100, 255));
+			    g2d.fillRect( MainFrame.getMainPanel().getWidth()-55, 38, 57, 50);
 			    g2d.setFont(new Font("TimesRoman", Font.PLAIN, fontSize));
 			    g2d.setColor(Color.red);
-			    g2d.drawString("FPS: " + Updater.actualFPS, MainFrame.getMainPanel().getWidth()-40,90);
+			    g2d.drawString("FPS: " + Updater.actualFPS, MainFrame.getMainPanel().getWidth()-50,50);
 			//	g2d.drawString("X: " + mouseX, 20, 70);
 			//	g2d.drawString("Y: " + mouseY, 20, 95);
 				g2d.dispose();
