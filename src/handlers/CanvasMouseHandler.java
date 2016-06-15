@@ -1,13 +1,18 @@
-package listeners;
+package handlers;
 
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
 
 import javax.swing.JComponent;
 
-public class CanvasMouseListener implements MouseMotionListener, MouseListener {
+import events.CustomMouseEvent;
+import graphics.ParticleCanvas;
+import listeners.CustomMouseListener;
+
+public class CanvasMouseHandler implements MouseMotionListener, MouseListener {
 
 	
 	public Point mousePosition = new Point();
@@ -24,9 +29,14 @@ public class CanvasMouseListener implements MouseMotionListener, MouseListener {
 
 	public JComponent externalSource;
 	
+	
+	//Acts as an intermediate to translate mouse events to non swing objects (won't disable for objects over)
+	private ArrayList<CustomMouseListener> cmListenerList = new ArrayList<CustomMouseListener>();
+	
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		// TODO Auto-generated method stub
+		if(externalSource instanceof ParticleCanvas) {System.out.println("yeboij");}
 		doubleClick = arg0.getClickCount()%2 == 0;
 		mousePosition = arg0.getPoint();
 	}
@@ -64,6 +74,7 @@ public class CanvasMouseListener implements MouseMotionListener, MouseListener {
 		// TODO Auto-generated method stub
 		switch(arg0.getButton()) {
 		case MouseEvent.BUTTON1:
+			System.out.println("LMBRELEASED");
 			leftMouseDown = false;
 			break;
 		case MouseEvent.BUTTON2:
@@ -88,5 +99,11 @@ public class CanvasMouseListener implements MouseMotionListener, MouseListener {
 		// TODO Auto-generated method stub
 		mousePosition = arg0.getPoint();
 	}
-
+	
+	
+	public synchronized void addCustomMouseListener(CustomMouseListener listener) {
+		if (!cmListenerList.contains(listener)) {
+			cmListenerList.add(listener);
+		}
+	}
 }

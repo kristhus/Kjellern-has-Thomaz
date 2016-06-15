@@ -25,6 +25,7 @@ public class LeftPanel extends JInternalFrame {
 		group.addC(new ListItem("", "Particles", "particles", false, this));
 		group.addC(new ListItem("", "Click & Drag", "Drag&Drop", false, this));
 		group.addC(new ListItem("", "Movable", "move", false, this));
+		group.addC(new ListItem("", "Gradient", "gradient", false, this));
 		group.addC(new ListItem("", "Shape Creator", "create", false, this), gl);
 		
 		setBounds(0, 0, 200, 700);

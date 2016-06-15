@@ -60,12 +60,15 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 	 *	
 	 * @param obj The object to collide with
 	 */
-	public Rectangle.Float getBounds() {
+	public Rectangle.Float getBoundsFloat() {
 		return new Rectangle.Float((float)getX(),(float) getY(), (float)getWidth(), (float)getHeight());
+	}
+	public Rectangle getBounds() {
+		return new Rectangle((int)getX(), (int)getY(), (int) getWidth(),(int) getHeight());
 	}
 	public ArrayList<Point.Float> getPointsInBounds() {
 		ArrayList<Point.Float> pib = new ArrayList<Point.Float>();
-		Rectangle.Float bounds = getBounds();
+		Rectangle.Float bounds = getBoundsFloat();
 		Point.Float topL = new Point.Float(bounds.x, bounds.y);
 		Point.Float topR = new Point.Float(bounds.x + bounds.width, bounds.y);
 		Point.Float botL = new Point.Float(bounds.x, bounds.y + bounds.height);
@@ -102,7 +105,7 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 		*/
 		Point.Float thisPoint = new Point.Float((float) (getX()), (float) (getY()));
 		for(Point.Float p : getPointsInBounds()) {
-			if(distFromPointToRect(obj.getBounds(), p) < distFromPointToRect(obj.getBounds(), thisPoint)) {
+			if(distFromPointToRect(obj.getBoundsFloat(), p) < distFromPointToRect(obj.getBoundsFloat(), thisPoint)) {
 				thisPoint = p;
 			}
 		}

@@ -1,5 +1,8 @@
 package graphics;
 
+import handlers.CanvasMouseHandler;
+import handlers.KeyBoardListener;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -25,8 +28,6 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.DesktopPaneUI;
 
-import listeners.CanvasMouseListener;
-import listeners.KeyBoardListener;
 import data.Updater;
 import reader.Reader;
 
@@ -45,7 +46,7 @@ public class MainFrame extends JFrame{
 	public static LeftPanel leftPanel;
 	public static RightPanel rightPanel;
 	
-	public static CanvasMouseListener mouseListener = new CanvasMouseListener();
+	public static CanvasMouseHandler mouseListener = new CanvasMouseHandler();
 	
 	public static void main(String args[]) {
 		mainFrame = new MainFrame();

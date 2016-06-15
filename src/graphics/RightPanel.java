@@ -1,5 +1,7 @@
 package graphics;
 
+import handlers.CanvasMouseHandler;
+import handlers.KeyBoardListener;
 import interfaces.Drawable;
 
 import java.awt.BorderLayout;
@@ -28,8 +30,6 @@ import javax.swing.SpringLayout;
 
 import shapeCreator.CreatorCanvas;
 import particleEngine.ColorChooser;
-import listeners.CanvasMouseListener;
-import listeners.KeyBoardListener;
 import moveable.GameObject;
 import moveable.MoveCanvas;
 import moveable.Player;
@@ -45,7 +45,7 @@ public class RightPanel extends JInternalFrame{
 	
 	
 	private InternalPanel internalPane;
-	private CanvasMouseListener mouseListener;
+	private CanvasMouseHandler mouseListener;
 	
 	
 	public RightPanel() {
@@ -55,15 +55,15 @@ public class RightPanel extends JInternalFrame{
 		setClosable(true);
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setMaximizable(true);
-		mouseListener = new CanvasMouseListener();
+		mouseListener = new CanvasMouseHandler();
 		internalPane = new InternalPanel();
-		internalPane.setBackground(Color.red);
+		internalPane.setBackground(Color.white);
 		internalPane.setVisible(true);
 		BorderLayout bl = new BorderLayout();
 		setLayout(bl);
 		GridLayout gl = new GridLayout();
 		setContentPane(internalPane);
-		mouseListener = new CanvasMouseListener();
+		mouseListener = new CanvasMouseHandler();
 		internalPane.addKeyListener(MainFrame.getKeyBoardListener());
 		setResizable(true);
 		decide("particles");
@@ -86,16 +86,21 @@ public class RightPanel extends JInternalFrame{
 			break;
 		case "particles":
 			drawableComponents = true;
-			colorChooser = new ColorChooser();
+			colorChooser = new ColorChooser();// Choose colours
 			internalPane.add(colorChooser);
-			ParticleCanvas pc = new ParticleCanvas();
+			Toolbox tb = new Toolbox(); // A submenu of various stuff which particleCanvas may use
+			internalPane.add(tb);
+			ParticleCanvas pc = new ParticleCanvas(tb);
 			SpringLayout spl = new SpringLayout();
 			internalPane.setLayout(spl);
 			internalPane.add(pc);
-			((SpringLayout) internalPane.getLayout()).putConstraint(SpringLayout.NORTH, colorChooser, 5, SpringLayout.NORTH, internalPane);
+			((SpringLayout) internalPane.getLayout()).putConstraint(SpringLayout.NORTH, colorChooser, 5, SpringLayout.NORTH, internalPane);//
 			((SpringLayout) internalPane.getLayout()).putConstraint(SpringLayout.WEST, colorChooser, 5, SpringLayout.WEST, internalPane);
-			((SpringLayout) internalPane.getLayout()).putConstraint(SpringLayout.NORTH, pc, 5, SpringLayout.SOUTH, colorChooser);
+			((SpringLayout) internalPane.getLayout()).putConstraint(SpringLayout.NORTH, pc, 5, SpringLayout.SOUTH, colorChooser);//
 			((SpringLayout) internalPane.getLayout()).putConstraint(SpringLayout.WEST, pc, 5, SpringLayout.WEST, internalPane);
+			((SpringLayout) internalPane.getLayout()).putConstraint(SpringLayout.WEST, tb, 5, SpringLayout.EAST, colorChooser);//
+			((SpringLayout) internalPane.getLayout()).putConstraint(SpringLayout.NORTH, tb, 0, SpringLayout.NORTH, colorChooser);
+			((SpringLayout) internalPane.getLayout()).putConstraint(SpringLayout.SOUTH, tb, 5, SpringLayout.NORTH, pc);
 			break;
 		case "Drag&Drop": 
 			internalPane.add(new DragCanvas(), BorderLayout.CENTER);
@@ -104,7 +109,10 @@ public class RightPanel extends JInternalFrame{
 		case "":
 			System.err.println("When creating a listitem, an action command must be added as well!");
 			break;
-		
+		case "gradient":
+			internalPane.add(new GradientCreator());
+			drawableComponents = true;
+			break;
 		case "move":
 //			Player player = new Player();
 			MoveCanvas mc = new MoveCanvas();
@@ -154,7 +162,7 @@ public class RightPanel extends JInternalFrame{
 		
 	}
 
-	public CanvasMouseListener getMouseListener() {
+	public CanvasMouseHandler getMouseListener() {
 		return mouseListener;
 	}
 	

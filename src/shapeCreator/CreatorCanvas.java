@@ -2,6 +2,7 @@ package shapeCreator;
 
 import graphics.MainFrame;
 import graphics.ParticleCanvas;
+import handlers.CanvasMouseHandler;
 import interfaces.Drawable;
 
 import java.awt.BorderLayout;
@@ -13,7 +14,6 @@ import java.awt.Point;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import listeners.CanvasMouseListener;
 import particleEngine.ColorChooser;;
 
 public class CreatorCanvas extends JPanel implements Drawable{

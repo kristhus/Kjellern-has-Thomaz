@@ -75,4 +75,8 @@ public class ConcurrentArrayList<T> {
         	readLock.unlock();
         }
 	}
+	
+	public List<T> removeAll() {
+		return new ArrayList<T>();
+	}
 }

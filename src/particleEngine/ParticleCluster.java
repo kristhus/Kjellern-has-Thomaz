@@ -28,11 +28,14 @@ public class ParticleCluster {
 	
 	private double deltaTimeDecimal;
 	
-	private ParticleCanvas caller;
 	
-
+	private ParticleCanvas caller;
+	private boolean isStatic;
+	private int startX;
+	private int startY;
 	
 	public ParticleCluster(int particleLimit, int particlesPerSecond, ParticleCanvas caller) {
+		this.isStatic = isStatic;
 		particles = new ConcurrentArrayList<Particle>();
 		this.particleLimit = particleLimit;
 		this.particlesPerSecond = particlesPerSecond;
@@ -41,24 +44,39 @@ public class ParticleCluster {
 		lifetime = (particleLimit/particlesPerSecond)*100;  //Consider making this a parameter, so particle lifetime can be decided (should be 1000, error somewhere else!)
 	}
 	
+	public ParticleCluster(int particleLimit, int particlesPerSecond, ParticleCanvas caller, int startX, int startY) {
+		this(particleLimit, particlesPerSecond, caller);
+		isStatic = true;
+		this.startX = startX;
+		this.startY = startY;
+	} 
+	
+	
 	public Particle seeded() {
 		int red = (int)(Math.random()*255); 
 		int green = (int)(Math.random()*255); 
 		int blue = (int)(Math.random()*255); 
 		Color c = new Color(red, green, blue);
 		int dim = 1 + (int)(Math.random()*10);
-		return new Particle(dim, dim, null, c,  MainFrame.mouseListener.mousePosition.x, MainFrame.mouseListener.mousePosition.y, true);
+		if(!isStatic)
+			return new Particle(dim, dim, null, c,  MainFrame.mouseListener.mousePosition.x, MainFrame.mouseListener.mousePosition.y, true);
+		else
+			return new Particle(dim, dim, null, c,  startX, startY, true);
+
 	}
 
 	public void update(double dt) {
 		int cycles = 1;
 		deltaTimeDecimal += particlesPerUpdate-(int) particlesPerUpdate;
-		while( particles.size() < particleLimit && MainFrame.mouseListener.leftMouseDown && cycles <= particlesPerUpdate+deltaTimeDecimal){// && particlesPerSecond < deltaSecond) { 
+		while( particles.size() < particleLimit && (MainFrame.mouseListener.leftMouseDown || isStatic) && cycles <= particlesPerUpdate+deltaTimeDecimal){// && particlesPerSecond < deltaSecond) { 
 			Particle p;
 			if(MainFrame.getRightPanel().getColorChooser().isSeedOn()){
 				p = seeded();				
 			}else {
-				p = new Particle(1, 1, null, MainFrame.getRightPanel().getColorChooser().getColor(), MainFrame.mouseListener.mousePosition.x, MainFrame.mouseListener.mousePosition.y, true, Particle.FLAME);
+				if(!isStatic)
+					p = new Particle(1, 1, null, MainFrame.getRightPanel().getColorChooser().getColor(), MainFrame.mouseListener.mousePosition.x, MainFrame.mouseListener.mousePosition.y, true);
+				else
+					p = new Particle(1, 1, null, MainFrame.getRightPanel().getColorChooser().getColor(), startX, startY, true);
 			}
 			particles.add(p); 
 			cycles ++;
@@ -95,7 +113,6 @@ public class ParticleCluster {
 				if(p.willCollide(b, p.getNextVelocityY(), 0)) {
 					try{
 						p.collide(b, p.getNextVelocityY());
-						System.out.println("________________");
 					}catch(NullPointerException e){
 //						e.printStackTrace();
 						//TODO; Fiks na jævla erroren
@@ -117,6 +134,11 @@ public class ParticleCluster {
 	}
 	public void setParticles(ConcurrentArrayList<Particle> particles) {
 		this.particles = particles;
+	}
+
+	public void removeAll() {
+		// TODO Auto-generated method stub
+		particles = new ConcurrentArrayList<>();
 	}
 
 }

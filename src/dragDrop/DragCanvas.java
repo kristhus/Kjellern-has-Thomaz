@@ -1,6 +1,7 @@
 package dragDrop;
 
 import graphics.MainFrame;
+import handlers.KeyBoardListener;
 import interfaces.Drawable;
 
 import java.awt.BorderLayout;
@@ -18,8 +19,6 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
-import listeners.KeyBoardListener;
 
 public class DragCanvas extends JPanel implements MouseMotionListener, MouseListener, Drawable{
 	

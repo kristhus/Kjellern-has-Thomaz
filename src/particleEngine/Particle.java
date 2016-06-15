@@ -23,7 +23,7 @@ TerminalVelocity -- || --
 
 public class Particle extends PhysicsObject{
 
-	public float velocity = 2; //MaxSpeed
+	public float velocity = 5; //MaxSpeed
 	public int opacity = 255;
 	public double deltaOpacity = 1; //(multiplum of 5, 3 or 17)
 	private boolean gravity;
@@ -162,7 +162,7 @@ public class Particle extends PhysicsObject{
 			return false;
 		}
 		
-		public Rectangle.Float getBounds() {
+		public Rectangle.Float getBoundsFloat() {
 			return new Rectangle.Float((float)getX(), (float)getY(), (float)getWidth(), (float)getHeight());
 		}
 

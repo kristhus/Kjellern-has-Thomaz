@@ -1,5 +1,7 @@
 package graphics;
 
+import handlers.FrameMenuListener;
+
 import java.awt.event.KeyEvent;
 
 import javax.swing.JMenu;
@@ -8,8 +10,6 @@ import javax.swing.JMenuItem;
 import javax.swing.UIManager;
 import javax.swing.plaf.MenuBarUI;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
-
-import listeners.FrameMenuListener;
 
 public class CreateMenu {
 	
