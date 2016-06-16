@@ -14,6 +14,9 @@ import graphics.MainFrame;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import particleEngine.ColorChooser;
 
@@ -27,13 +30,14 @@ public class ColourWheel extends JPanel implements MouseListener, MouseMotionLis
 	public int mouseY = 190;
 	
 	private JLabel wheel;
-	
+	private JSlider slipnSlide;
 	private ColorChooser callback;
 	
 	private int r = 255;
 	private int g = 0;
 	private int b = 0;
 	
+	private boolean mouseDown;
 	
 	public ColourWheel(ColorChooser caller) {
 		callback = caller;
@@ -49,7 +53,13 @@ public class ColourWheel extends JPanel implements MouseListener, MouseMotionLis
 		wheel.addMouseMotionListener(this);
 		add(wheel);
 		centreY = centreX = wheelIcon.getIconHeight()/2;
-		System.out.println(centreY + "___" + centreX);
+		
+		slipnSlide = new JSlider();
+		slipnSlide.setMaximum(255);
+		slipnSlide.setMinimum(0);
+		slipnSlide.setValue((r+g+b)/3);
+		slipnSlide.addChangeListener(new SlideListener());
+		add(slipnSlide);
 	}
 	
 	public void calculateColour(int mouseX, int mouseY) {
@@ -96,6 +106,7 @@ public class ColourWheel extends JPanel implements MouseListener, MouseMotionLis
 		callback.getrSlider().setValue(r);
 		callback.getgSlider().setValue(g);
 		callback.getbSlider().setValue(b);
+		slipnSlide.setValue((r+g+b)/3);
 	}
 
 	@Override
@@ -119,7 +130,7 @@ public class ColourWheel extends JPanel implements MouseListener, MouseMotionLis
 	@Override
 	public void mousePressed(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		
+		mouseDown = true;
 	}
 
 	@Override
@@ -128,6 +139,7 @@ public class ColourWheel extends JPanel implements MouseListener, MouseMotionLis
 		mouseX = arg0.getX();
 		mouseY = arg0.getY();
 		calculateColour(arg0.getX(), arg0.getY());
+		mouseDown = false;
 	}
 	
 	public void draw(Graphics g) {  
@@ -162,4 +174,44 @@ public class ColourWheel extends JPanel implements MouseListener, MouseMotionLis
 		
 	}
 	
+	public class SlideListener implements ChangeListener {
+
+		@Override
+		public void stateChanged(ChangeEvent arg0) {
+			// TODO Auto-generated method stub
+			System.out.println("r: " + r + " g: " + g + " b: " + b);
+			System.out.println("Brightness: " + (r+g+b)/3);
+			if(mouseDown) return;
+			
+			int val = ((JSlider)arg0.getSource()).getValue();
+			int oldVal = (r+g+b)/3;
+			int change = (val-oldVal);
+			if (val == 255) r = g = b = 255;
+			else if (val == 0) r = g = b = 0;
+			else {
+				if(change > 0) {
+					r += (255-r)*change/(255-val);
+					g += (255-g)*change/(255-val);
+					b += (255-b)*change/(255-val);
+				}else{
+					r += (r)*change/(val);
+					g += (g)*change/(val);
+					b += (b)*change/(val);
+				}
+			}
+				
+				
+			
+			callback.setColour(new Color(r, g, b));
+			callback.getrSlider().setValue(r);
+			callback.getgSlider().setValue(g);
+			callback.getbSlider().setValue(b);
+			
+//			int rMod = (255-r)/(255-val);
+//			int gMod = (255-g)/(255-val);
+//			int bMod = (255-g)/(255-val);
+//			modifiedColor = new Color(rMod, gMod, bMod);
+		}
+		
+	}
 }

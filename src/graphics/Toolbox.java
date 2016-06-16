@@ -6,11 +6,19 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.AbstractButton;
+import javax.swing.border.EmptyBorder;
+
+import constants.EnvironmentConstants;
 
 public class Toolbox extends JPanel implements ActionListener {
 
@@ -18,8 +26,11 @@ public class Toolbox extends JPanel implements ActionListener {
 	private JToggleButton sprayCan;
 	private JButton physicsSettings;
 
+	private JCheckBox hide;
 	
 	private JPanel mainPanel;
+	
+	private ArrayList<JTextField> fields;
 	
 	private boolean isDirOutput = false;
 	
@@ -73,7 +84,7 @@ public class Toolbox extends JPanel implements ActionListener {
 				isDirOutput = false;
 			break;
 		case "settings":
-			
+			createSettingsFrame();
 			break;
 		}
 	}
@@ -88,6 +99,95 @@ public class Toolbox extends JPanel implements ActionListener {
 	}
 	public boolean isSprayCan() {
 		return sprayCan.isSelected();
+	}
+	
+	public void createSettingsFrame() {
+		JFrame frame = new JFrame();
+		fields = new ArrayList<JTextField>();
+		JPanel panel = new JPanel();
+		panel.setBackground(Color.white);
+		panel.setBorder(new EmptyBorder(20, 20, 20, 20));
+		frame.add(panel);
+		GridBagLayout gbl = new GridBagLayout();
+		panel.setLayout(gbl);
+		GridBagConstraints c = new GridBagConstraints();
+		
+		JTextField gravity = new JTextField(EnvironmentConstants.GRAVITY + "");
+		gravity.setName("gravity");
+		JLabel gravityLabel = new JLabel("Gravity");
+		JTextField termVelocity = new JTextField(EnvironmentConstants.TERMINAL_VELOCITY + "");
+		termVelocity.setName("tvel");
+		JLabel termVelocityLabel = new JLabel("Terminal Velocity");
+		JTextField airDensity = new JTextField(EnvironmentConstants.AIR_DENSITY + "");
+		airDensity.setName("airDensity");
+		JLabel airDensityLabel = new JLabel("Air density");
+		JTextField gravConstant = new JTextField(EnvironmentConstants.GRAVITATIONAL_CONSTANT + "");
+		gravConstant.setName("gravC");
+		JLabel gravConstantLabel = new JLabel("Gravitational constant");
+		
+		fields.add(gravity);
+		fields.add(termVelocity);
+		fields.add(airDensity);
+		fields.add(gravConstant);
+		
+		JButton updateValues = new JButton("Update");
+		updateValues.addActionListener(new ButtonListener());
+		
+		c.gridx = 1;
+		c.gridy = 0;
+		panel.add(updateValues, c);
+		c.gridy++;
+		c.gridx = 0;
+		panel.add(gravityLabel, c);
+		c.gridx++;
+		panel.add(gravity,c);
+		c.gridx = 0;
+		c.gridy++;
+		panel.add(termVelocityLabel, c);
+		c.gridx++;
+		panel.add(termVelocity, c);
+		c.gridx = 0;
+		c.gridy++;
+		panel.add(airDensityLabel, c);
+		c.gridx++;
+		panel.add(airDensity, c);
+		c.gridx = 0;
+		c.gridy++;
+		panel.add(gravConstantLabel, c);
+		c.gridx++;
+		panel.add(gravConstant, c);
+		
+		
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.setVisible(true);
+		frame.pack();
+		frame.revalidate();
+		frame.repaint();
+	}
+	
+	public class ButtonListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			for(JTextField f : fields) {
+				switch(f.getName()) {
+				case "gravity":
+					EnvironmentConstants.GRAVITY = Double.parseDouble(f.getText());
+					break;
+				case "tvel":
+					EnvironmentConstants.TERMINAL_VELOCITY = Double.parseDouble(f.getText());
+					break;
+				case "AirDensity":
+					EnvironmentConstants.AIR_DENSITY = Double.parseDouble(f.getText());
+					break;
+				case "gravConstant":
+					EnvironmentConstants.GRAVITATIONAL_CONSTANT = Double.parseDouble(f.getText());
+					break;
+				}
+			}
+		}
+		
 	}
 	
 }

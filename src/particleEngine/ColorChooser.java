@@ -95,6 +95,9 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 		setBackground(Color.white);
 		setVisible(true);
 		selectedColour = new Color(255,255,255);
+		rSlider.setValue(255);
+		gSlider.setValue(255);
+		bSlider.setValue(255);
 	}
 	@Override
 	public void paintComponents(Graphics g) {
@@ -224,6 +227,9 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 	
 	public void setColour(Color c) {
 		selectedColour = c;
+		rSlider.setValue(c.getRed());
+		gSlider.setValue(c.getGreen());
+		bSlider.setValue(c.getBlue());
 	}
 	
 }

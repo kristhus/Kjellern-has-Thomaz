@@ -36,7 +36,6 @@ public class CanvasMouseHandler implements MouseMotionListener, MouseListener {
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		if(externalSource instanceof ParticleCanvas) {System.out.println("yeboij");}
 		doubleClick = arg0.getClickCount()%2 == 0;
 		mousePosition = arg0.getPoint();
 	}
@@ -44,7 +43,6 @@ public class CanvasMouseHandler implements MouseMotionListener, MouseListener {
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		System.out.println("Enter Sandman");
 		if(relativeToSource) {
 			btnFromSource = true;
 		}
@@ -53,7 +51,6 @@ public class CanvasMouseHandler implements MouseMotionListener, MouseListener {
 	@Override
 	public void mouseExited(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		System.out.println("Exit Sandman");
 	}
 
 	@Override
@@ -74,7 +71,6 @@ public class CanvasMouseHandler implements MouseMotionListener, MouseListener {
 		// TODO Auto-generated method stub
 		switch(arg0.getButton()) {
 		case MouseEvent.BUTTON1:
-			System.out.println("LMBRELEASED");
 			leftMouseDown = false;
 			break;
 		case MouseEvent.BUTTON2:
@@ -84,7 +80,6 @@ public class CanvasMouseHandler implements MouseMotionListener, MouseListener {
 		mousePosition = arg0.getPoint();
 		JComponent c = (JComponent) arg0.getSource();
 //		releasedAt = new Point(c.getLocation())
-		System.out.println("Btn released");
 	}
 
 	@Override

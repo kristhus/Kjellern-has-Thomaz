@@ -2,6 +2,8 @@ package data;
 
 import graphics.MainFrame;
 
+// Takk til Sssssaltlord aka desh aka Anders Lunde Shoutout #ARKtheGame
+
 public class Updater {
 
 	public void calculateFPS() { 
@@ -45,6 +47,8 @@ public class Updater {
                         sleepTime += 1000/MainFrame.FPS;
                         framesSkipped++;
 					}
+					// Current FPS
+//					System.out.println(1/(System.nanoTime()*Math.pow(10,-6) - beginTime)*1000 + " Frames Per second");
 			} finally {
 				
 			}

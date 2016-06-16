@@ -1,5 +1,6 @@
 package physics;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -26,6 +27,26 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 	private double dvY;
 	private double width;
 	private double height;
+	private Color color;
+	
+	private double bounciness = 1.0; // This may or may not be permanent, as bounce is an interaction including 
+									//  thermodynamics, potential, kinetic energy and several other factors, 
+								   //   which takes way to long to do in a sensible amount of time
+								  //	Bounciness 1, means that all energy is conserved in the colliding object, 0 the oppposite.
+								 //		With bounciness < 1, no energy is converted, but entropies its ass outta there
+
+	
+	private boolean gravity; // Is this object affected by gravity
+	private boolean isStatic; // Unmovable (e.g. glued to the world)
+	
+	public boolean isStatic() {
+		return isStatic;
+	}
+
+	public void setStatic(boolean isStatic) {
+		this.isStatic = isStatic;
+	}
+
 	private ArrayList<Force> forces;//A list with the forces influencing this object
 	
 	public PhysicsObject() {
@@ -89,6 +110,34 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 		
 	}
 	
+	public void elasticCollision(PhysicsObject obj) {
+		
+//		if(obj.getVelocityX() == obj.getVelocityY() && obj.getVelocityX() == 0) {
+//			// Formula for moving object colliding with target initially at rest
+//			// Initially moving: v1 = u1 * (m1-m2)/(m1+m2) 
+//			double vX1 = velocityX* (weight-obj.getWeight() / (weight+obj.getWeight()));
+//			double vY1 = velocityY* (weight-obj.getWeight() / (weight+obj.getWeight()));
+//			// Target at rest:   u2 = 2*m1*v1/(m1+m2)
+//			double vX2 = 2*getWeight()*velocityX/(getWeight() + obj.getWeight());
+//			double vY2 = 2*getWeight()*velocityY/(getWeight() + obj.getWeight());
+//		}
+//		else {
+			double vX1 = velocityX* (weight-obj.getWeight() / (weight+obj.getWeight())) + obj.getVelocityX()*(2*obj.getWeight())/(getWeight()+obj.getWeight());
+			double vY1 = velocityY* (weight-obj.getWeight() / (weight+obj.getWeight())) + obj.getVelocityY()*(2*obj.getWeight())/(getWeight()+obj.getWeight());;
+			// Target at rest:   u2 = 2*m1*v1/(m1+m2)
+			double vX2 = 2*getWeight()*velocityX/(getWeight() + obj.getWeight()) + (obj.getWeight()-getWeight())/(getWeight() + obj.getWeight());
+			double vY2 = 2*getWeight()*velocityY/(getWeight() + obj.getWeight()) + (obj.getWeight()-getWeight())/(getWeight() + obj.getWeight());;
+//		}
+		
+		setVelocityX(vX1); 
+		setVelocityY(vY1); 
+		
+		obj.setVelocityX(vX2 * (getBounciness() + obj.getBounciness())/2);
+		obj.setVelocityY(vY2 * (getBounciness() + obj.getBounciness())/2);
+		
+	}
+	
+	
 	public void collide(PhysicsObject obj, double yModifier) { //TODO: Should have a shape of some sorts, and this method should be remade in regards to that
 		//TODO: velocity is the vector to be used to figure out if 
 		
@@ -119,7 +168,7 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 		Double minDist = thisPoint.distance(A);
 		Point.Float edgeA = A;
 		for(Point.Float p : edges) {
-			if(thisPoint.distance(p)<minDist) {
+			if(thisPoint.distance(p) < minDist) {
 				edgeA = p;
 			}
 		}
@@ -349,29 +398,61 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 		return r1.intersects(r2);
 	}
 	
-	public void goesOutOfBounds(Rectangle bounds) {
+	public boolean goesOutOfBounds(Rectangle bounds) {
 		// TODO Auto-generated method stub
 		int boundsX = bounds.x;
 		int boundsY = bounds.y;
 		int boundsX2 = bounds.x+bounds.width;
 		int boundsY2 = bounds.y+bounds.height;
-		if(boundsX>getX()) {
+		boolean oob = false;
+		if(boundsX > getX()) {
 			//OUT ON LEFT
 			setVelocityX(getVelocityX()*-1);
+			oob = true;
 		}
 		if(boundsX2 < getX() + getWidth()) {
 			//OUT RIGHT
 			setVelocityX(getVelocityX()*-1);
+			oob = true;
 		}
 		if(boundsY > getY()) {
 			//OUTSIDE UP
 			setVelocityY(getVelocityY()*-1);
+			oob = true;
 		}
 		if(boundsY2 < getY() + getHeight()){
 			//OUT DOWN
 			setVelocityY(getVelocityY()*-1);
+			oob = true;
 		}
+		return oob;
 		
 	}
+
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color colour) {
+		this.color = colour;
+	}
+
+	public boolean isGravity() {
+		return gravity;
+	}
+
+	public void setGravity(boolean gravity) {
+		this.gravity = gravity;
+	}
+
+	public double getBounciness() {
+		return bounciness;
+	}
+
+	public void setBounciness(double bounciness) {
+		this.bounciness = bounciness;
+	}
+	
+	
 	
 }

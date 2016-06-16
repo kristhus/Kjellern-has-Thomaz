@@ -5,6 +5,8 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.ImageIcon;
 
@@ -32,6 +34,10 @@ public class Particle extends PhysicsObject{
 	private int deltaGreen = 7;
 	private int deltaBlue = 7;
 	
+	private double initAngleMin;
+	private double initAngleMax;
+	private ArrayList<Point> dir;
+	
 	public Color color;
 
 	private ImageIcon sprite;
@@ -54,21 +60,78 @@ public class Particle extends PhysicsObject{
 			
 			//random direction
 			if(randomDirection) {
-				double tmpdirx = (Math.random()*velocity); 
-				double tmpdiry = (Math.random()*velocity); 
-				setVelocityX(-(Math.random()*velocity)); 
-				setVelocityY(-(Math.random()*velocity));
-				if((int)(Math.random()*2) == 1) {
-					setVelocityX(tmpdirx);
+				double tmpdirx = 0;
+				double tmpdiry = 0;
+				double velocityLength = 0;
+				while(true) {
+					tmpdirx = randomDecimal(velocity);
+					tmpdiry = randomDecimal(velocity);
+					velocityLength = Math.sqrt(Math.pow(tmpdirx, 2) + Math.pow(tmpdiry, 2));
+					if(velocityLength < Math.abs(velocity)) {
+						break;
+					}
 				}
-				if((int)(Math.random()*2) == 1) {
-					setVelocityY(tmpdiry);
-				}
+				
+				setVelocityX(tmpdirx);
+				setVelocityY(tmpdiry);
+//					System.out.println(tmpdirx);
+//					System.out.println(tmpdiry);
+//					System.out.println(getVelocityX());
+//					System.out.println(getVelocityY());
+//					System.out.println(velocityLength);
+//					System.out.println(max);
+//					System.exit(0);
+//				}
+				
+				gravity = true;
+			}else {
+				//float rad = Math.toRadians(2);
+				setVelocityX(velocity);
+				setVelocityY(velocity);
+				gravity = true;
 			}
-			setVelocityX(getVelocityX() + Math.random());
-			setVelocityY(getVelocityY() + Math.random());
-			gravity = true;
+			
 		}
+		
+		/**
+		 * Returns a double in the range of [-max, max]
+		 * @param max Highest allowed value
+		 * @return
+		 */
+		public double randomDecimal(double max) {
+			double tmp = (Math.random()*max); 
+			
+			if((int)(Math.random()*2) == 1) {
+				tmp*=-1;
+			}
+			return tmp;
+		}
+		
+		public Particle(int width, int height, ImageIcon sprite, Color c, int x, int y, double minAngle, double maxAngle, double speed, ArrayList<Point> dir) {
+			this(width, height, sprite, c, x, y, false);
+			initAngleMin = minAngle;
+			initAngleMax = maxAngle;
+			this.dir = dir;
+			Random rand = new Random();
+			double randomDec1 = (double) (rand.nextDouble()*(1.0-0.6) + 0.6);
+//			randomDec1 = 1;
+			double angle = (double) (rand.nextDouble() * (maxAngle - minAngle) + minAngle);
+//			if(angle<0) angle+=2*Math.PI;
+//			if(angle>2*Math.PI) angle-=2*Math.PI;
+//			double angle = maxAngle;
+//			angle = Math.toRadians(angle);
+			
+			double vx = Math.abs(dir.get(0).x-dir.get(1).x);
+			double vy = Math.abs(dir.get(0).y-dir.get(1).y);
+			double length = Math.sqrt(  Math.pow(vx, 2)  + Math.pow(vy, 2)     );
+			
+			
+			setVelocityX(speed/length*randomDec1*((Math.cos(angle) - vx*Math.sin(angle))));
+			setVelocityY(speed/length*randomDec1*((Math.sin(angle) - vy*Math.cos(angle))));
+//			currentTheme = OCEAN;
+//			setThemeColor(currentTheme);
+		}
+		
 		public Particle(int width, int height, ImageIcon sprite, Color c, int x, int y, boolean randomDirection, int currentTheme) {
 			this(width, height, sprite, c, x, y, randomDirection);
 			this.currentTheme = currentTheme;
@@ -169,7 +232,7 @@ public class Particle extends PhysicsObject{
 		@Override
 		public boolean outOfBounds(int x, int y) {
 			// TODO Auto-generated method stub
-			return false;
+			return true;
 		}
 
 

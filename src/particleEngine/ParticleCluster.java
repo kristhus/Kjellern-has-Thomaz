@@ -34,6 +34,12 @@ public class ParticleCluster {
 	private int startX;
 	private int startY;
 	
+	private boolean directional;
+	private double maxAngle;
+	private double minAngle;
+	private double speed;
+	private ArrayList<Point> dir;
+	
 	public ParticleCluster(int particleLimit, int particlesPerSecond, ParticleCanvas caller) {
 		this.isStatic = isStatic;
 		particles = new ConcurrentArrayList<Particle>();
@@ -44,11 +50,12 @@ public class ParticleCluster {
 		lifetime = (particleLimit/particlesPerSecond)*100;  //Consider making this a parameter, so particle lifetime can be decided (should be 1000, error somewhere else!)
 	}
 	
-	public ParticleCluster(int particleLimit, int particlesPerSecond, ParticleCanvas caller, int startX, int startY) {
+	public ParticleCluster(int particleLimit, int particlesPerSecond, ParticleCanvas caller, int startX, int startY, ArrayList<Point> dir) {
 		this(particleLimit, particlesPerSecond, caller);
 		isStatic = true;
 		this.startX = startX;
 		this.startY = startY;
+		this.dir = dir;
 	} 
 	
 	
@@ -61,7 +68,7 @@ public class ParticleCluster {
 		if(!isStatic)
 			return new Particle(dim, dim, null, c,  MainFrame.mouseListener.mousePosition.x, MainFrame.mouseListener.mousePosition.y, true);
 		else
-			return new Particle(dim, dim, null, c,  startX, startY, true);
+			return new Particle(dim, dim, null, c,  startX, startY, false);
 
 	}
 
@@ -73,10 +80,18 @@ public class ParticleCluster {
 			if(MainFrame.getRightPanel().getColorChooser().isSeedOn()){
 				p = seeded();				
 			}else {
-				if(!isStatic)
-					p = new Particle(1, 1, null, MainFrame.getRightPanel().getColorChooser().getColor(), MainFrame.mouseListener.mousePosition.x, MainFrame.mouseListener.mousePosition.y, true);
-				else
-					p = new Particle(1, 1, null, MainFrame.getRightPanel().getColorChooser().getColor(), startX, startY, true);
+				if(!directional) { // Create particle with initial speed vector
+					if(!isStatic)
+						p = new Particle(1, 1, null, MainFrame.getRightPanel().getColorChooser().getColor(), MainFrame.mouseListener.mousePosition.x, MainFrame.mouseListener.mousePosition.y, true);
+					else
+						p = new Particle(1, 1, null, MainFrame.getRightPanel().getColorChooser().getColor(), startX, startY, true);
+				}
+				else {
+					if(!isStatic)
+						p = new Particle(1, 1, null, MainFrame.getRightPanel().getColorChooser().getColor(), MainFrame.mouseListener.mousePosition.x, MainFrame.mouseListener.mousePosition.y, minAngle, maxAngle, speed, dir);
+					else
+						p = new Particle(1, 1, null, MainFrame.getRightPanel().getColorChooser().getColor(), startX, startY, minAngle, maxAngle, speed, dir);
+				}
 			}
 			particles.add(p); 
 			cycles ++;
@@ -88,14 +103,18 @@ public class ParticleCluster {
 		ConcurrentArrayList<Particle> tmpParticles = new ConcurrentArrayList<Particle>();
 		boolean sublist = false;
 		Iterator<Particle> tmp = getParticles().iterator();
+		boolean oob = false;
 		while(tmp.hasNext()) {
 			//TODO: IF OUT OF BOUNDS DO SOMETHING
 			Particle p = tmp.next();
-			p.goesOutOfBounds(new Rectangle(0,0,caller.getWidth(), caller.getHeight()));
+			oob = p.goesOutOfBounds(new Rectangle(0,0,caller.getWidth(), caller.getHeight()));
 			p.update(dt);
-			if(p.life < lifetime && particles.size() < particleLimit) {
+			if(oob){ // TODO: Make user able to decide what to do when oob. 
+				// Do nothing swagger
+			}
+			else if(p.life < lifetime && particles.size() < particleLimit) {
 				tmpParticles.add(p);
-			}else{
+			}else {
 				sublist = true;
 			}
 		}
@@ -106,13 +125,14 @@ public class ParticleCluster {
 		}
 		
 		Iterator<Particle> tmp2 = getParticles().iterator();
-		while(tmp2.hasNext()) {
+		while(tmp2.hasNext()) { // This part iterates every particle, and checks every collidable for collision
 			Particle p = tmp2.next();
 			// Move this code beneath if(p.life < lifetime && particles.size() < particleLimit)
 			for(PhysicsObject b : caller.getCollisionBoxes()) {
 				if(p.willCollide(b, p.getNextVelocityY(), 0)) {
 					try{
-						p.collide(b, p.getNextVelocityY());
+							p.elasticCollision(b);
+//							p.collide(b, p.getNextVelocityY());
 					}catch(NullPointerException e){
 //						e.printStackTrace();
 						//TODO; Fiks na jævla erroren
@@ -137,8 +157,50 @@ public class ParticleCluster {
 	}
 
 	public void removeAll() {
-		// TODO Auto-generated method stub
 		particles = new ConcurrentArrayList<>();
 	}
+	
+	public void setMinAngle(float angle) {
+		minAngle = angle;
+	}
+	public void setMaxAngle(float angle) {
+		maxAngle = angle;
+	}
+	public void setDirectional(double minAngle, double maxAngle) {
+		directional = true;
+		this.minAngle = minAngle;
+		this.maxAngle = maxAngle;
+	}
 
+	public void setSpeed(double i) {
+		directional = true;
+		speed = i;
+		
+	}
+
+	public int getParticleLimit() {
+		return particleLimit;
+	}
+
+	public void setParticleLimit(int particleLimit) {
+		this.particleLimit = particleLimit;
+	}
+
+	public int getParticlesPerSecond() {
+		return particlesPerSecond;
+	}
+
+	public void setParticlesPerSecond(int particlesPerSecond) {
+		this.particlesPerSecond = particlesPerSecond;
+	}
+
+	public double getLifetime() {
+		return lifetime;
+	}
+
+	public void setLifetime(double lifetime) {
+		this.lifetime = lifetime;
+	}
+	
+	
 }
