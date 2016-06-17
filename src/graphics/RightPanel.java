@@ -64,7 +64,8 @@ public class RightPanel extends JInternalFrame{
 		GridLayout gl = new GridLayout();
 		setContentPane(internalPane);
 		mouseListener = new CanvasMouseHandler();
-		internalPane.addKeyListener(MainFrame.getKeyBoardListener());
+		internalPane.addKeyListener(MainFrame.keyHandler);
+		addKeyListener(MainFrame.keyHandler);
 		setResizable(true);
 		decide("particles");
 		revalidate();

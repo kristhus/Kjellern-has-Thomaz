@@ -1,5 +1,6 @@
 package particleEngine;
 
+import graphics.MainFrame;
 import interfaces.Drawable;
 
 import java.awt.Color;
@@ -52,10 +53,10 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 
 
 	public ColorChooser() {
-			
 		rSlider = new JSlider();
 		gSlider = new JSlider();
 		bSlider = new JSlider();
+		
 		rSlider.addChangeListener(new SliderStateChange());
 		gSlider.addChangeListener(new SliderStateChange());
 		bSlider.addChangeListener(new SliderStateChange());
@@ -98,6 +99,8 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 		rSlider.setValue(255);
 		gSlider.setValue(255);
 		bSlider.setValue(255);
+		addKeyListener(MainFrame.keyHandler);
+		setFocusable(false);
 	}
 	@Override
 	public void paintComponents(Graphics g) {

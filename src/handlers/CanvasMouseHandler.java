@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import javax.swing.JComponent;
 
 import events.CustomMouseEvent;
+import graphics.MainFrame;
 import graphics.ParticleCanvas;
 import listeners.CustomMouseListener;
 

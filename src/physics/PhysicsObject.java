@@ -1,5 +1,7 @@
 package physics;
 
+import graphics.MainFrame;
+
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -29,6 +31,9 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 	private double height;
 	private Color color;
 	
+	private ArrayList<PhysicsObject> attached = new ArrayList<PhysicsObject>();
+	private PhysicsObject attachedTo;
+	
 	private double bounciness = 1.0; // This may or may not be permanent, as bounce is an interaction including 
 									//  thermodynamics, potential, kinetic energy and several other factors, 
 								   //   which takes way to long to do in a sensible amount of time
@@ -36,7 +41,7 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 								 //		With bounciness < 1, no energy is converted, but entropies its ass outta there
 
 	
-	private boolean gravity; // Is this object affected by gravity
+	private boolean gravity = true; // Is this object affected by gravity
 	private boolean isStatic; // Unmovable (e.g. glued to the world)
 	
 	public boolean isStatic() {
@@ -99,12 +104,12 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 	}
 	
 	public void updatePosition(double dt) {// dependant on speed
-		x += velocityX;//*dt;
-		y += velocityY;//*dt;
+		x += velocityX*30/MainFrame.FPS;//*dt;
+		y += velocityY*30/MainFrame.FPS;//*dt;
 	}
 	public void updateSpeed(double dt) { // dependant on acceleration
-		velocityX += dvX;//*dt;
-		velocityY += dvY;//*dt;
+		velocityX += dvX*30/MainFrame.FPS;//*dt;
+		velocityY += dvY*30/MainFrame.FPS;//*dt;
 	}
 	public void updateAcceleration(double dt) { // dependant on Forces
 		
@@ -112,29 +117,22 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 	
 	public void elasticCollision(PhysicsObject obj) {
 		
-//		if(obj.getVelocityX() == obj.getVelocityY() && obj.getVelocityX() == 0) {
-//			// Formula for moving object colliding with target initially at rest
-//			// Initially moving: v1 = u1 * (m1-m2)/(m1+m2) 
-//			double vX1 = velocityX* (weight-obj.getWeight() / (weight+obj.getWeight()));
-//			double vY1 = velocityY* (weight-obj.getWeight() / (weight+obj.getWeight()));
-//			// Target at rest:   u2 = 2*m1*v1/(m1+m2)
-//			double vX2 = 2*getWeight()*velocityX/(getWeight() + obj.getWeight());
-//			double vY2 = 2*getWeight()*velocityY/(getWeight() + obj.getWeight());
-//		}
-//		else {
 			double vX1 = velocityX* (weight-obj.getWeight() / (weight+obj.getWeight())) + obj.getVelocityX()*(2*obj.getWeight())/(getWeight()+obj.getWeight());
 			double vY1 = velocityY* (weight-obj.getWeight() / (weight+obj.getWeight())) + obj.getVelocityY()*(2*obj.getWeight())/(getWeight()+obj.getWeight());;
 			// Target at rest:   u2 = 2*m1*v1/(m1+m2)
-			double vX2 = 2*getWeight()*velocityX/(getWeight() + obj.getWeight()) + (obj.getWeight()-getWeight())/(getWeight() + obj.getWeight());
-			double vY2 = 2*getWeight()*velocityY/(getWeight() + obj.getWeight()) + (obj.getWeight()-getWeight())/(getWeight() + obj.getWeight());;
-//		}
+			double vX2 = 2*getWeight()*velocityX/(getWeight() + obj.getWeight()) - obj.getVelocityX()*(obj.getWeight()-getWeight())/(getWeight() + obj.getWeight());
+			double vY2 = 2*getWeight()*velocityY/(getWeight() + obj.getWeight()) - obj.getVelocityY()*(obj.getWeight()-getWeight())/(getWeight() + obj.getWeight());;
+			
+				if(!isStatic()) {
+					setVelocityY(vY1 * (getBounciness() + obj.getBounciness())/2); 
+					setVelocityX(-vX1 * (getBounciness() + obj.getBounciness())/2);
+				}
+				if(!obj.isStatic) {
+					obj.setVelocityX(vX2 * (getBounciness() + obj.getBounciness())/2);
+					obj.setVelocityY(vY2 * (getBounciness() + obj.getBounciness())/2);
+				}
 		
-		setVelocityX(vX1); 
-		setVelocityY(vY1); 
-		
-		obj.setVelocityX(vX2 * (getBounciness() + obj.getBounciness())/2);
-		obj.setVelocityY(vY2 * (getBounciness() + obj.getBounciness())/2);
-		
+				
 	}
 	
 	
@@ -391,11 +389,30 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 	public boolean willCollide(PhysicsObject obj, double speedModifier1, double speedModifier2){
 		Point2D.Float p1 = getNextPosition(x, y, getVelocityX(), getVelocityY() + speedModifier1);
 		Point2D.Float p2 = getNextPosition(obj.getX(), obj.getY(),obj.getVelocityX(), obj.getVelocityY() + speedModifier2);
+		
+		
 		Rectangle2D.Float r1 = new Rectangle2D.Float();
 		r1.setRect(p1.getX(), p1.getY(), width, height);
 		Rectangle2D.Float r2 = new Rectangle2D.Float();
 		r2.setRect(p2.getX(), p2.getY(), obj.getWidth(), obj.getHeight());
-		return r1.intersects(r2);
+		
+		int epsilon = 10; // number of steps to take
+		double incrementX = (p1.getX()-x)/epsilon;
+		double incrementY = (p1.getY()-y)/epsilon;
+		Rectangle2D.Float rn = new Rectangle2D.Float();
+		rn.setRect(x, y, width, height);
+		for(double i = 0; i <= 1; i+=0.1) { // 0.1 is the step to lower margin of error. splits the path towards next point into ten points and checks.
+			rn.x = (float) x;
+			rn.y = (float) y;
+			
+			rn.x += getVelocityX()*i;
+			rn.y += getVelocityY()*i;
+			if(rn.intersects(r2))
+				return true;
+		}
+		return false;
+		
+//		return r1.intersects(r2);
 	}
 	
 	public boolean goesOutOfBounds(Rectangle bounds) {
@@ -428,7 +445,51 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 		return oob;
 		
 	}
-
+	
+	/**
+	 * Takes in a PhysicsObject, and sets all fields equal to the object to clone.
+	 * @param obj The physics object to be cloned
+	 * @param keepAppearance Position, color and size remains unaffected
+	 */
+	public void cloneWith(PhysicsObject obj, boolean keepAppearance) {
+		setDensity(obj.getDensity());
+		setWeight(obj.getWeight());
+		setVelocityX(obj.getVelocityX());
+		setVelocityY(obj.getVelocityY());
+		setDvX(obj.getDvX());
+		setDvY(obj.getDvY());
+		if(!keepAppearance) {
+			setX(obj.getX());
+			setY(obj.getY());
+			setWidth(obj.getWidth());
+			setHeight(obj.getHeight());
+			setColor(obj.getColor());
+		}
+	}
+	
+	/**
+	 * Pin this PhysicsObject to another object
+	 * @param obj The Physics object to attach to this
+	 */
+	public void attach(PhysicsObject obj) {
+		if(attached.contains(obj)) return; // C
+		obj.cloneWith(this, true);
+		attached.add(obj);
+	} 
+	/**
+	 * Deattach an object from the list of attachments
+	 * @param obj
+	 */
+	public void release(PhysicsObject obj) {
+		attached.remove(obj);
+	}
+	/**
+	 * Deattach this object from its attachment
+	 */
+	public void release() {
+		attachedTo = null;
+	}
+	
 	public Color getColor() {
 		return color;
 	}
@@ -451,6 +512,22 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 
 	public void setBounciness(double bounciness) {
 		this.bounciness = bounciness;
+	}
+
+	public double getDvX() {
+		return dvX;
+	}
+
+	public void setDvX(double dvX) {
+		this.dvX = dvX;
+	}
+
+	public double getDvY() {
+		return dvY;
+	}
+
+	public void setDvY(double dvY) {
+		this.dvY = dvY;
 	}
 	
 	

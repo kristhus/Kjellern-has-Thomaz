@@ -49,6 +49,7 @@ public class Particle extends PhysicsObject{
 	private int currentTheme;
 	
 		public Particle(int width, int height, ImageIcon sprite, Color c, int x, int y, boolean randomDirection) {
+//			setBounciness(0);
 			setWidth(width);
 			setHeight(height);
 			setDensity(0.005);
@@ -83,12 +84,12 @@ public class Particle extends PhysicsObject{
 //					System.exit(0);
 //				}
 				
-				gravity = true;
+				setGravity(true);
 			}else {
 				//float rad = Math.toRadians(2);
 				setVelocityX(velocity);
 				setVelocityY(velocity);
-				gravity = true;
+				setGravity(true);
 			}
 			
 		}
@@ -123,11 +124,21 @@ public class Particle extends PhysicsObject{
 			
 			double vx = Math.abs(dir.get(0).x-dir.get(1).x);
 			double vy = Math.abs(dir.get(0).y-dir.get(1).y);
-			double length = Math.sqrt(  Math.pow(vx, 2)  + Math.pow(vy, 2)     );
+			double length = Math.sqrt(  Math.pow(vx, 2) + Math.pow(vy, 2)     );
+			double mod = randomDec1*speed/length;
+//			mod = 0.05;
 			
+			// DEss lengre avstandsvektoren til sprayen blir, dess større unøyaktighet blir det
+			//Dersom vx eller vy går mot radius, er farten korrekt
+			double tmpVx = ((Math.cos(angle) - (vx-(int)vx)*Math.sin(angle)));
+			double tmpVy = ((Math.sin(angle) - (vy-(int)vy)*Math.cos(angle)));
 			
-			setVelocityX(speed/length*randomDec1*((Math.cos(angle) - vx*Math.sin(angle))));
-			setVelocityY(speed/length*randomDec1*((Math.sin(angle) - vy*Math.cos(angle))));
+			// Scale velocities towards speed
+			double speedVect = Math.sqrt(speed*speed);
+			double constant = speedVect/(Math.pow(tmpVx,2) + (Math.pow(tmpVy,2)));
+			setVelocityX(tmpVx*constant*randomDec1);
+			setVelocityY(tmpVy*constant*randomDec1);
+			
 //			currentTheme = OCEAN;
 //			setThemeColor(currentTheme);
 		}
@@ -196,7 +207,7 @@ public class Particle extends PhysicsObject{
 		
 		public void update(double dt){ //Update with regards to gravity if such a thing exists
 			updateTheme();
-			if(gravity && getVelocityY() <= EnvironmentConstants.TERMINAL_VELOCITY) {
+			if(isGravity() && getVelocityY() <= EnvironmentConstants.TERMINAL_VELOCITY) {
 				updateSpeed(dt);
 			}
 			life+= dt;
@@ -205,7 +216,7 @@ public class Particle extends PhysicsObject{
 				opacity -= deltaOpacity;
 			}
 			color = new Color(color.getRed(), color.getGreen(), color.getBlue(), opacity);
-			updatePosition(dt);
+			if(!isStatic()) updatePosition(dt);
 		}
 
 		public double getLife() {

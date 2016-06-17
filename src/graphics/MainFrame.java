@@ -2,6 +2,7 @@ package graphics;
 
 import handlers.CanvasMouseHandler;
 import handlers.KeyBoardListener;
+import handlers.KeyHandler;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -47,13 +48,13 @@ public class MainFrame extends JFrame{
 	public static RightPanel rightPanel;
 	
 	public static CanvasMouseHandler mouseListener = new CanvasMouseHandler();
+	public static KeyHandler keyHandler = new KeyHandler();
 	
 	public static void main(String args[]) {
 		mainFrame = new MainFrame();
 		reader = new Reader();
 		updater = new Updater();
 		updater.calculateFPS();
-		
 	}
 	
 	public MainFrame() {

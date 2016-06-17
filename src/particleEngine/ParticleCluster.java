@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -18,7 +19,7 @@ import data.ConcurrentArrayList;
 
 
 
-public class ParticleCluster {
+public class ParticleCluster extends PhysicsObject {
 
 	private int particleLimit;
 	private int particlesPerSecond;
@@ -38,6 +39,8 @@ public class ParticleCluster {
 	private double maxAngle;
 	private double minAngle;
 	private double speed;
+	private Color color;
+	
 	private ArrayList<Point> dir;
 	
 	public ParticleCluster(int particleLimit, int particlesPerSecond, ParticleCanvas caller) {
@@ -82,15 +85,15 @@ public class ParticleCluster {
 			}else {
 				if(!directional) { // Create particle with initial speed vector
 					if(!isStatic)
-						p = new Particle(1, 1, null, MainFrame.getRightPanel().getColorChooser().getColor(), MainFrame.mouseListener.mousePosition.x, MainFrame.mouseListener.mousePosition.y, true);
+						p = new Particle(1, 1, null, getColor(), MainFrame.mouseListener.mousePosition.x, MainFrame.mouseListener.mousePosition.y, true);
 					else
-						p = new Particle(1, 1, null, MainFrame.getRightPanel().getColorChooser().getColor(), startX, startY, true);
+						p = new Particle(1, 1, null, getColor(), startX, startY, true);
 				}
 				else {
 					if(!isStatic)
-						p = new Particle(1, 1, null, MainFrame.getRightPanel().getColorChooser().getColor(), MainFrame.mouseListener.mousePosition.x, MainFrame.mouseListener.mousePosition.y, minAngle, maxAngle, speed, dir);
+						p = new Particle(1, 1, null, getColor(), MainFrame.mouseListener.mousePosition.x, MainFrame.mouseListener.mousePosition.y, minAngle, maxAngle, speed, dir);
 					else
-						p = new Particle(1, 1, null, MainFrame.getRightPanel().getColorChooser().getColor(), startX, startY, minAngle, maxAngle, speed, dir);
+						p = new Particle(1, 1, null, getColor(), startX, startY, minAngle, maxAngle, speed, dir);
 				}
 			}
 			particles.add(p); 
@@ -108,6 +111,9 @@ public class ParticleCluster {
 			//TODO: IF OUT OF BOUNDS DO SOMETHING
 			Particle p = tmp.next();
 			oob = p.goesOutOfBounds(new Rectangle(0,0,caller.getWidth(), caller.getHeight()));
+			
+			p.setGravity(isGravity());
+			p.setStatic(isStatic());
 			p.update(dt);
 			if(oob){ // TODO: Make user able to decide what to do when oob. 
 				// Do nothing swagger
@@ -201,6 +207,27 @@ public class ParticleCluster {
 	public void setLifetime(double lifetime) {
 		this.lifetime = lifetime;
 	}
+
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+	}
+
+	@Override
+	public boolean collided(Shape shape) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean outOfBounds(int x, int y) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
 	
 	
 }

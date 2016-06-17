@@ -1,5 +1,8 @@
 package particleEngine;
 
+import graphics.ParticleCanvas;
+import graphics.ParticleCanvas.DirectionalSprays;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -105,6 +108,13 @@ public class ParticleSettings extends JFrame {
 			add(heightLabel);
 			add(heightField);
 			
+			JLabel bouncinessLabel = new JLabel("Bounce");
+			JTextField bouncinessField = new JTextField(obj.getBounciness() + "");
+			bouncinessField.setName("bounciness");
+			fields.add(bouncinessField);
+			add(bouncinessLabel);
+			add(bouncinessField);
+			
 			
 			//Gravity label
 			spl.putConstraint(SpringLayout.NORTH, gravityLabel, 10, SpringLayout.NORTH, this);
@@ -136,11 +146,17 @@ public class ParticleSettings extends JFrame {
 			// Height field
 			spl.putConstraint(SpringLayout.BASELINE, heightField, 0, SpringLayout.BASELINE, heightLabel);
 			spl.putConstraint(SpringLayout.HORIZONTAL_CENTER, heightField, 0, SpringLayout.HORIZONTAL_CENTER, widthField);
+			// Bounciness Label
+			spl.putConstraint(SpringLayout.NORTH, bouncinessLabel, 20, SpringLayout.SOUTH, heightLabel);
+			spl.putConstraint(SpringLayout.WEST, bouncinessLabel, 10, SpringLayout.EAST, cc);
+			// Bounciness field
+			spl.putConstraint(SpringLayout.BASELINE, bouncinessField, 0, SpringLayout.BASELINE, bouncinessLabel);
+			spl.putConstraint(SpringLayout.HORIZONTAL_CENTER, bouncinessField, 0, SpringLayout.HORIZONTAL_CENTER, heightField);
 			
 			
 			// Update Button
-			spl.putConstraint(SpringLayout.EAST, updateFields, 10, SpringLayout.EAST, this);
-			spl.putConstraint(SpringLayout.SOUTH, updateFields, 10, SpringLayout.SOUTH, this);
+			spl.putConstraint(SpringLayout.WEST, updateFields, 10, SpringLayout.WEST, this);
+			spl.putConstraint(SpringLayout.SOUTH, updateFields, -10, SpringLayout.SOUTH, this);
 			
 		}
 		
@@ -175,6 +191,8 @@ public class ParticleSettings extends JFrame {
 							obj.setWidth(Double.parseDouble(field.getText()));
 						case "height":
 							obj.setHeight(Double.parseDouble(field.getText()));
+						case "bounciness":
+							obj.setBounciness(Double.parseDouble(field.getText()));
 						}
 					}
 				}

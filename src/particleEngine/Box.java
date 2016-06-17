@@ -20,6 +20,7 @@ public class Box extends PhysicsObject {
 		setWidth(width);
 		setHeight(height);
 		setVelocityX(0);
+		setStatic(true);
 //		setVelocityY(-5);
 	}
 	public Box(Rectangle bounds) {
@@ -34,7 +35,7 @@ public class Box extends PhysicsObject {
 	}
 	
 	public void update(double dt) {
-		if(isGravity()) updateSpeed(dt);
+		if(isGravity() && !isStatic()) updateSpeed(dt);
 		if(!isStatic()) updatePosition(dt);
 		// Check mousePosition  compared to this object, and if it intersects, clickedor w/e
 	}
