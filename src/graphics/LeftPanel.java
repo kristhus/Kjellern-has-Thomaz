@@ -27,6 +27,7 @@ public class LeftPanel extends JInternalFrame {
 		group.addC(new ListItem("", "Movable", "move", false, this));
 		group.addC(new ListItem("", "Gradient", "gradient", false, this));
 		group.addC(new ListItem("", "Shape Creator", "create", false, this), gl);
+		group.addC(new ListItem("", "Letter to Tone", "letterTone", false, this));
 		
 		setBounds(0, 0, 200, 700);
 		setVisible(true);

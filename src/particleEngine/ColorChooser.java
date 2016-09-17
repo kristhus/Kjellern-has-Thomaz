@@ -36,6 +36,7 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 	private JSlider rSlider;
 	private JSlider gSlider;
 	private JSlider bSlider;
+	private JSlider aSlider;
 	
 	private JCheckBox seedsOn;
 
@@ -56,16 +57,19 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 		rSlider = new JSlider();
 		gSlider = new JSlider();
 		bSlider = new JSlider();
+		aSlider = new JSlider();
 		
 		rSlider.addChangeListener(new SliderStateChange());
 		gSlider.addChangeListener(new SliderStateChange());
 		bSlider.addChangeListener(new SliderStateChange());
+		aSlider.addChangeListener(new SliderStateChange());
 		
 		seedsOn = new JCheckBox();
 		seedsOn.addItemListener(this);
 		
 		rSlider.setMaximum(255);
 		gSlider.setMaximum(255);
+		bSlider.setMaximum(255);
 		bSlider.setMaximum(255);
 		
 		selectedColourSquare = new JPanel();
@@ -88,6 +92,8 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 		add(gSlider, c);
 		c.gridy++;
 		add(bSlider, c);
+		c.gridy++;
+		add(aSlider, c);
 		c.gridx = 1;
 		c.gridy = 1;
 		//c.weightx = c.weighty = 1.0;
@@ -99,6 +105,7 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 		rSlider.setValue(255);
 		gSlider.setValue(255);
 		bSlider.setValue(255);
+		aSlider.setValue(255);
 		addKeyListener(MainFrame.keyHandler);
 		setFocusable(false);
 	}
@@ -131,7 +138,7 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 		@Override
 		public void stateChanged(ChangeEvent arg0) {
 			// TODO Auto-generated method stub
-			selectedColour = new Color(rSlider.getValue(), gSlider.getValue(), bSlider.getValue());
+			selectedColour = new Color(rSlider.getValue(), gSlider.getValue(), bSlider.getValue(), aSlider.getValue());
 		}
 		
 	}
@@ -148,7 +155,7 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 	}
 	
 	public Color getColor() {
-		return new Color(rSlider.getValue(), gSlider.getValue(), bSlider.getValue());
+		return new Color(rSlider.getValue(), gSlider.getValue(), bSlider.getValue(), aSlider.getValue());
 	}
 
 
@@ -179,6 +186,10 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 
 	public void setbSlider(JSlider bSlider) {
 		this.bSlider = bSlider;
+	}
+	
+	public static Color invert(Color c) {
+		return new Color(255 - c.getRed(), 255 - c.getGreen(), 255-c.getBlue());
 	}
 
 	public class SelectColourListener implements MouseListener {
@@ -233,6 +244,7 @@ public class ColorChooser extends JPanel implements Drawable, ItemListener {
 		rSlider.setValue(c.getRed());
 		gSlider.setValue(c.getGreen());
 		bSlider.setValue(c.getBlue());
+		aSlider.setValue(c.getAlpha());
 	}
 	
 }

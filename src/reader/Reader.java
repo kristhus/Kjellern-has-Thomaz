@@ -38,10 +38,8 @@ public class Reader {
 	}
 	
 	public ImageIcon readGif(String path) {
-		System.out.println("HEI");
 		ImageIcon img = null;
 		img = new ImageIcon(getClass().getResource(path));
-		System.out.println(img.getIconHeight());
 		return img;
 	}
 	

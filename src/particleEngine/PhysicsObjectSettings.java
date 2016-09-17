@@ -4,6 +4,7 @@ import graphics.ParticleCanvas;
 import graphics.ParticleCanvas.DirectionalSprays;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Toolkit;
@@ -11,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -23,7 +25,7 @@ import javax.swing.SpringLayout;
 
 import physics.PhysicsObject;
 
-public class ParticleSettings extends JFrame {
+public class PhysicsObjectSettings extends JFrame {
 
 	private int screenWidth = 520;
 	private int screenHeight = 500;
@@ -34,7 +36,7 @@ public class ParticleSettings extends JFrame {
 	private ArrayList<JTextField> fields = new ArrayList<JTextField>();
 	
 	
-	public ParticleSettings(String headerStr, PhysicsObject obj) {
+	public PhysicsObjectSettings(String headerStr, PhysicsObject obj) {
 		this.obj = obj;
 		sp = new SettingsPanel(headerStr, screenWidth, screenHeight);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -115,6 +117,10 @@ public class ParticleSettings extends JFrame {
 			add(bouncinessLabel);
 			add(bouncinessField);
 			
+			DirectionalSettings ds = new DirectionalSettings();
+			if(obj instanceof DirectionalSprays) {
+				add(ds);
+			}
 			
 			//Gravity label
 			spl.putConstraint(SpringLayout.NORTH, gravityLabel, 10, SpringLayout.NORTH, this);
@@ -158,6 +164,11 @@ public class ParticleSettings extends JFrame {
 			spl.putConstraint(SpringLayout.WEST, updateFields, 10, SpringLayout.WEST, this);
 			spl.putConstraint(SpringLayout.SOUTH, updateFields, -10, SpringLayout.SOUTH, this);
 			
+			if(obj instanceof DirectionalSprays) {
+				spl.putConstraint(SpringLayout.NORTH, ds, 10, SpringLayout.SOUTH, cc);
+				spl.putConstraint(SpringLayout.WEST, ds, 10, SpringLayout.WEST, this);
+				ds.revalidate();
+			}
 		}
 		
 	}
@@ -178,6 +189,9 @@ public class ParticleSettings extends JFrame {
 					obj.setVelocityX(0); // Not so sure about these ones
 					obj.setVelocityY(0); //
 					break;
+				case "pGravity":
+					((DirectionalSprays) obj).getSpraynpray().setGravity(box.isSelected());
+					break;
 				}
 			}
 			else if(arg0.getSource() instanceof JButton){
@@ -189,14 +203,116 @@ public class ParticleSettings extends JFrame {
 							break;
 						case "width":
 							obj.setWidth(Double.parseDouble(field.getText()));
+							break;
 						case "height":
 							obj.setHeight(Double.parseDouble(field.getText()));
+							break;
 						case "bounciness":
 							obj.setBounciness(Double.parseDouble(field.getText()));
+							break;
+						case "spray":
+							((DirectionalSprays) obj).setSpray(Double.parseDouble(field.getText()));
+							break;
+						case "pps":
+							((DirectionalSprays) obj).getSpraynpray().setParticlesPerSecond(Integer.parseInt(field.getText()));
+							break;
+						case "limit":
+							((DirectionalSprays) obj).getSpraynpray().setParticleLimit(Integer.parseInt(field.getText()));
+							
 						}
 					}
 				}
 			}
+		}
+		
+	}
+	
+	public class DirectionalSettings extends JPanel {
+		
+		public DirectionalSettings(){
+			if(!(obj instanceof DirectionalSprays)) {return; }
+			
+			DirectionalSprays tmp = (DirectionalSprays) obj;
+			
+			SpringLayout spl = new SpringLayout();
+			setLayout(spl);
+			
+			JLabel subHeader = new JLabel("Particle Settings");
+			subHeader.setFont(new Font("arial", Font.BOLD, 11));
+			add(subHeader);
+			
+			JCheckBox gravityBox = new JCheckBox();
+			gravityBox.setActionCommand("pGravity");
+			gravityBox.setSelected(tmp.getSpraynpray().isGravity());
+			gravityBox.addActionListener(new ActionListenerSettings());
+			JLabel gravityLabel = new JLabel("Gravity");
+			add(gravityBox);
+			add(gravityLabel);
+			
+			JLabel angleLabel = new JLabel("Angle spray");
+			JTextField angleField = new JTextField(tmp.getSpray() + "");
+			angleField.setToolTipText("The amount of spray, given in degrees");
+			angleField.setName("spray");
+			fields.add(angleField);
+			add(angleLabel);
+			add(angleField);
+			
+			JLabel ppsLabel = new JLabel("P/s");
+			JTextField ppsField = new JTextField(tmp.getSpraynpray().getParticlesPerSecond() + "");
+			ppsField.setToolTipText("The amount of particles per second");
+			ppsField.setName("pps");
+			fields.add(ppsField);
+			add(ppsLabel);
+			add(ppsField);
+			
+			JLabel limitLabel = new JLabel("Limit");
+			JTextField limitField = new JTextField(tmp.getSpraynpray().getParticleLimit() + "");
+			limitField.setToolTipText("The amount of particles allowed in the cluster");
+			limitField.setName("limit");
+			fields.add(limitField);
+			add(limitLabel);
+			add(limitField);
+			
+			
+			// Layout constraints
+			
+			//Header Label
+			spl.putConstraint(SpringLayout.NORTH, subHeader, 5, SpringLayout.NORTH, this);
+			spl.putConstraint(SpringLayout.WEST, subHeader, 10, SpringLayout.WEST, this);
+			// Angle Label
+			spl.putConstraint(SpringLayout.NORTH, angleLabel, 10, SpringLayout.SOUTH, subHeader);
+			spl.putConstraint(SpringLayout.WEST, angleLabel, 10, SpringLayout.WEST, this);
+			// Angle field
+			spl.putConstraint(SpringLayout.BASELINE, angleField, 0, SpringLayout.BASELINE, angleLabel);
+			spl.putConstraint(SpringLayout.WEST, angleField, 10, SpringLayout.EAST, angleLabel);
+			// PPS Label
+			spl.putConstraint(SpringLayout.NORTH, ppsLabel , 10, SpringLayout.SOUTH, angleLabel);
+			spl.putConstraint(SpringLayout.WEST, ppsLabel, 10, SpringLayout.WEST, this);
+			// PPS field
+			spl.putConstraint(SpringLayout.VERTICAL_CENTER, ppsField, 0, SpringLayout.VERTICAL_CENTER, ppsLabel);
+			spl.putConstraint(SpringLayout.HORIZONTAL_CENTER, ppsField, 0, SpringLayout.HORIZONTAL_CENTER, angleField);	
+			// Limit Label
+			spl.putConstraint(SpringLayout.NORTH, limitLabel , 10, SpringLayout.SOUTH, ppsLabel);
+			spl.putConstraint(SpringLayout.WEST, limitLabel, 10, SpringLayout.WEST, this);
+			// Limit field
+			spl.putConstraint(SpringLayout.VERTICAL_CENTER, limitField, 0, SpringLayout.VERTICAL_CENTER, limitLabel);
+			spl.putConstraint(SpringLayout.HORIZONTAL_CENTER, limitField, 0, SpringLayout.HORIZONTAL_CENTER, ppsField);	
+			
+			// Gravity Label
+			spl.putConstraint(SpringLayout.NORTH, gravityLabel , 10, SpringLayout.SOUTH, limitLabel);
+			spl.putConstraint(SpringLayout.WEST, gravityLabel, 10, SpringLayout.WEST, this);
+			// Gravity field
+			spl.putConstraint(SpringLayout.VERTICAL_CENTER, gravityBox, 0, SpringLayout.VERTICAL_CENTER, gravityLabel);
+			spl.putConstraint(SpringLayout.HORIZONTAL_CENTER, gravityBox, 0, SpringLayout.HORIZONTAL_CENTER, limitField);			
+			
+			
+			
+			
+			
+			setVisible(true);
+			setBackground(Color.white);
+			setBorder(BorderFactory.createLineBorder(new Color(0,0,0,50)));
+			setPreferredSize(new Dimension(150,200));
 		}
 		
 	}

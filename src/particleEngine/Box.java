@@ -12,7 +12,6 @@ import physics.PhysicsObject;
 
 public class Box extends PhysicsObject {
 
-
 	public Box(int x, int y, int width, int height) {
 		setColor(Color.green);
 		setX(x);

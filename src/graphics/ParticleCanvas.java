@@ -21,11 +21,13 @@ import java.util.Iterator;
 
 import javax.swing.JPanel;
 
+import constants.EnvironmentConstants;
 import data.ConcurrentArrayList;
 import particleEngine.Box;
+import particleEngine.ColorChooser;
 import particleEngine.Particle;
 import particleEngine.ParticleCluster;
-import particleEngine.ParticleSettings;
+import particleEngine.PhysicsObjectSettings;
 import physics.PhysicsObject;
 
 public class ParticleCanvas extends JPanel implements Drawable{
@@ -41,13 +43,15 @@ public class ParticleCanvas extends JPanel implements Drawable{
 	
 	private Toolbox tb;
 	
-	private ParticleSettings settings;
+	private PhysicsObjectSettings settings;
 	
 	private int initMouseX;
 	private int initMouseY;
 	
 //	private boolean mouseOverDirectionalSpray;
 //	private boolean mouseOverObject;
+	
+	private boolean movePhysicsObject;
 	
 	private boolean dragDirectionalSpray;
 	
@@ -75,13 +79,18 @@ public class ParticleCanvas extends JPanel implements Drawable{
 	public ParticleCanvas(Toolbox tb) {
 		this();
 		this.tb = tb;
-		directionalSprays = new ArrayList<ParticleCanvas.DirectionalSprays>();
+		directionalSprays = new ArrayList<DirectionalSprays>();
 	}
 	
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
+		
+		// ENABLE ON A NEED ONLY BASIS, as this shit wrecks fps
+		if(MainFrame.keyHandler.zDown) {
+			g2d.scale(4.0, 4.0);
+		}else g2d.scale(1, 1);
 		if(tmpBox != null){
 			//Draw tmpBox
 			g.setColor(Color.yellow);
@@ -106,28 +115,27 @@ public class ParticleCanvas extends JPanel implements Drawable{
    	 	// COLLIDABLES
 		if(tb.dirOutputIsDown() && !MainFrame.mouseListener.leftMouseDown) {
 			g2d.setStroke(new BasicStroke(2));
-			g2d.setColor(Color.white);
+			g2d.setColor(ColorChooser.invert(getBackground()));
 			g2d.drawOval(MainFrame.mouseListener.mousePosition.x-15/2, MainFrame.mouseListener.mousePosition.y-15/2, 15, 15);
 		}
 		
 		//Temporary line
 		if(tb.dirOutputIsDown() && dragDirectionalSpray) {
 			g2d.setStroke(new BasicStroke(2));
-			g2d.setColor(Color.white);
+			g2d.setColor(ColorChooser.invert(getBackground()));
 			g2d.drawLine(initMouseX, initMouseY, MainFrame.mouseListener.mousePosition.x, MainFrame.mouseListener.mousePosition.y);
 		}
-		
 		//Directional sprays
 		for(DirectionalSprays spray : directionalSprays) {
 			g2d.setStroke(new BasicStroke(1));
-			g2d.setColor(Color.white);
+			g2d.setColor(ColorChooser.invert(getBackground()));
 			if(!MainFrame.keyHandler.hDown) {
 				
 				RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			    g2d.setRenderingHints(rh);
 			    
-				g2d.drawOval(spray.posX-spray.radius/2, spray.posY-spray.radius/2, spray.radius, spray.radius);
-				g2d.drawLine(spray.posX, spray.posY, spray.endX, spray.endY);
+				g2d.drawOval( (int)(spray.posX-spray.radius/2), (int)(spray.posY-spray.radius/2),(int)(spray.radius),(int)( spray.radius));
+				g2d.drawLine((int)(spray.posX), (int)(spray.posY), (int)(spray.endX), (int)(spray.endY));
 			}
 			
 			ConcurrentArrayList<Particle> c = spray.getSpraynpray().getParticles();
@@ -151,6 +159,8 @@ public class ParticleCanvas extends JPanel implements Drawable{
 	public void update(double dt) {
 		//setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		if(MainFrame.mouseListener.leftMouseDown) requestFocus();
+		if(MainFrame.keyHandler.bDown) setBackground(Color.white);
+			else setBackground(Color.black);
 		setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		for(int i = 0; i < collisionBoxes.size(); i++) {
 			Box b = collisionBoxes.get(i);
@@ -163,29 +173,39 @@ public class ParticleCanvas extends JPanel implements Drawable{
 					// OPEN A NEW WINDOW
 					if(settings != null)
 						settings.dispose();
-					settings = new ParticleSettings("Box settings", b);
+					settings = new PhysicsObjectSettings("Box settings", b);
 				} 
 				else{
 					haltCluster = false;
 				}
 			}
-			else if(isHovering && MainFrame.keyHandler.ctrlDown){
-				setCursor(new Cursor(Cursor.MOVE_CURSOR));
-			}
-			
 			else{
 				if(!MainFrame.mouseListener.leftMouseDown)
 					haltCluster = false;
 			}
+			
+			if(isHovering && MainFrame.keyHandler.ctrlDown || (movePhysicsObject && b.isMouseMove())){
+				setCursor(new Cursor(Cursor.MOVE_CURSOR));
+				if(MainFrame.mouseListener.leftMouseDown) {
+					b.setMouseMove(true);
+					movePhysicsObject = true;
+					b.setX((int) (MainFrame.mouseListener.mousePosition.x-b.getWidth()/2));
+					b.setY((int) (MainFrame.mouseListener.mousePosition.y - b.getHeight()/2));
+				}else{movePhysicsObject = false;b.setMouseMove(false);}
+			}
+			
+
 			b.goesOutOfBounds(new Rectangle(0,0, getWidth(), getHeight())); // WHY IS THIS HERE?
 			for(int j = 1; j < collisionBoxes.size(); j++) {
 				Box p = collisionBoxes.get(j);
-				p.goesOutOfBounds(p.getBounds());
+				//p.goesOutOfBounds(p.getBounds());
 				if(p.willCollide(b, p.getNextVelocityY(), b.getNextVelocityY())) {
 					try{
-						p.collide(b, p.getNextVelocityY());
+						p.elasticCollision(b);
+//						p.collide(b, p.getNextVelocityY());
 					}catch(NullPointerException e){
-						// e.printStackTrace();
+//						 e.printStackTrace();
+//						System.exit(0);
 						//TODO; Fiks na j�vla erroren
 					}finally {
 						//System.exit(0);
@@ -195,7 +215,14 @@ public class ParticleCanvas extends JPanel implements Drawable{
 		}
 		
 		// Check for mouseinput regarding the directional sprays
-		for(DirectionalSprays spray : directionalSprays) {
+		ArrayList<DirectionalSprays> tmpSpray = (ArrayList<DirectionalSprays>) directionalSprays.clone();
+		for(DirectionalSprays spray : tmpSpray) {
+			
+			//Shit is bugged as fuck yo
+//			if(spray.goesOutOfBounds(getBounds()) ) {
+//				directionalSprays.remove(spray);
+//			}
+			
 			int mx = MainFrame.mouseListener.mousePosition.x;
 			int my = MainFrame.mouseListener.mousePosition.y;
 			double l = Math.sqrt(Math.pow(mx-spray.posX, 2) + Math.pow(my-spray.posY, 2));
@@ -204,7 +231,7 @@ public class ParticleCanvas extends JPanel implements Drawable{
 				if(MainFrame.mouseListener.leftMouseDown) {
 					if(settings != null)
 						settings.dispose();
-					settings = new ParticleSettings("Directional Spray", spray);
+					settings = new PhysicsObjectSettings("Directional Spray", spray);
 				}
 			}
 		}
@@ -280,57 +307,69 @@ public class ParticleCanvas extends JPanel implements Drawable{
 	}
 	
 	public class DirectionalSprays extends PhysicsObject {
-		private int posX;
-		private int posY;
-		private int radius;
+		private double posX;
+		private double posY;
+		private double radius;
 		
-		private int endX; //Direction of spray
-		private int endY;
+		private double endX; //Direction of spray
+		private double endY;
 		
 		private double angle;
+		private double spray = 5;
 		
 		private ParticleCluster spraynpray;
 		
 		public DirectionalSprays(int posX, int posY, int radius, int endX, int endY, ParticleCanvas pc) {
-			this.posX = posX;
-			this.posY = posY;
+			setX(posX);
+			setY(posY);
 			this.radius = radius;
 			this.endX = endX;
 			this.endY = endY;
+			setGravity(false);
 			
 			setColor(MainFrame.getRightPanel().getColorChooser().getColor());
 			
 			angle = Math.toDegrees(Math.atan2(endY-posY, endX - posX));
-//			if(angle <= 0 && angle >= -90) // 270->360
-//				angle = -(90+angle);
-//			else if(angle < -90)		// 180->270
-//				angle = -90-angle;
-//			else if(angle >= 90) 		// 90 -> 180
-//				angle = 270-angle;
-//			else if (angle <= 180) 		// 
-//				angle = 270-angle;
-//			if(angle < 0){
-//		        angle += 360;
-//		    }
+
 			angle = Math.toRadians(angle);
 //			if(angle < 0) angle+= 2*Math.PI;
 			ArrayList<Point> dir = new ArrayList<Point>();
-			dir.add(new Point(posX, endX));
-			dir.add(new Point(posY, endY));
+			dir.add(new Point(posX, posY));
+			dir.add(new Point(endX, endY));
 			
 			spraynpray = new ParticleCluster(10000, 100, pc, posX, posY, dir);
-			spraynpray.setDirectional(angle-Math.toRadians(5), angle + Math.toRadians(5));
+			spraynpray.setDirectional(angle-Math.toRadians(spray), angle + Math.toRadians(spray));
 			double length = Math.sqrt(Math.pow(posX-endX,2) + Math.pow(posY-endY, 2));
 			spraynpray.setSpeed(length/10);
 			spraynpray.setColor(getColor());
+			spraynpray.setLineSpray(true);
 		}
 		
 		public void update(double dt) {
+			updatePosition(dt);
+			if(isGravity() && getVelocityY() <= EnvironmentConstants.TERMINAL_VELOCITY) 
+				updateSpeed(dt);
+			
 			spraynpray.setColor(getColor());
-			spraynpray.setGravity(isGravity());
-			spraynpray.setStatic(isStatic());
+//			spraynpray.setGravity(isGravity());
+//			spraynpray.setStatic(isStatic());
+			spraynpray.setMinAngle(angle-Math.toRadians(spray));
+			spraynpray.setMaxAngle(angle+Math.toRadians(spray));
+			spraynpray.setStartX((int) getX());
+			spraynpray.setStartY((int) getY());
+			
 			spraynpray.update(dt);
+			
 		}
+		
+		@Override
+		public void updatePosition(double dt) {// dependant on speed
+			setX(getX() + getVelocityX()*30/MainFrame.updater.actualFPS);//*dt; // NOTE: I made the program in regards to 30 FPS, which is why it must be accounted for here, if fps != 30
+			setY(getY() + getVelocityY()*30/MainFrame.updater.actualFPS);//*dt;
+			endX+=getVelocityX()*30/MainFrame.updater.actualFPS;
+			endY+=getVelocityY()*30/MainFrame.updater.actualFPS;
+		}
+		
 		
 		public ParticleCluster getSpraynpray(){
 			return spraynpray;
@@ -350,6 +389,25 @@ public class ParticleCanvas extends JPanel implements Drawable{
 		public boolean outOfBounds(int x, int y) {
 			// TODO Auto-generated method stub
 			return false;
+		}
+
+		public double getSpray() {
+			// TODO Auto-generated method stub
+			return spray;
+		}
+		public void setSpray(double spray) {
+			this.spray = spray;
+		}
+		
+		@Override
+		public void setX(double x) {
+			super.setX(x);
+			posX = x;
+		}
+		@Override
+		public void setY(double y) {
+			super.setY(y);
+			posY = y;
 		}
 	}
 	

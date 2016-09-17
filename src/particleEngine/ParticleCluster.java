@@ -12,6 +12,7 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 import physics.PhysicsObject;
 import constants.EnvironmentConstants;
@@ -41,6 +42,9 @@ public class ParticleCluster extends PhysicsObject {
 	private double speed;
 	private Color color;
 	
+	private boolean lineSpray; // If this is true, the particles will be sprayed out from the directional line. ONLY TO BE USED WITH DIRECTIONAL SPRAY
+							  // Good for making rain and dust
+	
 	private ArrayList<Point> dir;
 	
 	public ParticleCluster(int particleLimit, int particlesPerSecond, ParticleCanvas caller) {
@@ -59,6 +63,7 @@ public class ParticleCluster extends PhysicsObject {
 		this.startX = startX;
 		this.startY = startY;
 		this.dir = dir;
+		
 	} 
 	
 	
@@ -92,8 +97,13 @@ public class ParticleCluster extends PhysicsObject {
 				else {
 					if(!isStatic)
 						p = new Particle(1, 1, null, getColor(), MainFrame.mouseListener.mousePosition.x, MainFrame.mouseListener.mousePosition.y, minAngle, maxAngle, speed, dir);
-					else
-						p = new Particle(1, 1, null, getColor(), startX, startY, minAngle, maxAngle, speed, dir);
+					else {
+						if(!lineSpray)
+							p = new Particle(1, 1, null, getColor(), startX, startY, minAngle, maxAngle, speed, dir);
+						else {
+							p = new Particle(1, 1, null, getColor(), MainFrame.mouseListener.mousePosition.x, MainFrame.mouseListener.mousePosition.y, speed, dir);
+						}
+					}
 				}
 			}
 			particles.add(p); 
@@ -115,7 +125,7 @@ public class ParticleCluster extends PhysicsObject {
 			p.setGravity(isGravity());
 			p.setStatic(isStatic());
 			p.update(dt);
-			if(oob){ // TODO: Make user able to decide what to do when oob. 
+			if(oob){ // TODO: Make user able to decide what to do when oob. As of now, they get deleted
 				// Do nothing swagger
 			}
 			else if(p.life < lifetime && particles.size() < particleLimit) {
@@ -135,7 +145,8 @@ public class ParticleCluster extends PhysicsObject {
 			Particle p = tmp2.next();
 			// Move this code beneath if(p.life < lifetime && particles.size() < particleLimit)
 			for(PhysicsObject b : caller.getCollisionBoxes()) {
-				if(p.willCollide(b, p.getNextVelocityY(), 0)) {
+//				if(p.getBounds().intersects(b.getBounds())) {
+				if(p.willCollide(b, p.getNextVelocityY(), b.getNextVelocityY())) {
 					try{
 							p.elasticCollision(b);
 //							p.collide(b, p.getNextVelocityY());
@@ -166,11 +177,11 @@ public class ParticleCluster extends PhysicsObject {
 		particles = new ConcurrentArrayList<>();
 	}
 	
-	public void setMinAngle(float angle) {
-		minAngle = angle;
+	public void setMinAngle(double d) {
+		minAngle = d;
 	}
-	public void setMaxAngle(float angle) {
-		maxAngle = angle;
+	public void setMaxAngle(double d) {
+		maxAngle = d;
 	}
 	public void setDirectional(double minAngle, double maxAngle) {
 		directional = true;
@@ -190,6 +201,7 @@ public class ParticleCluster extends PhysicsObject {
 
 	public void setParticleLimit(int particleLimit) {
 		this.particleLimit = particleLimit;
+		lifetime = (particleLimit/particlesPerSecond)*100;  //Consider making this a parameter, so particle lifetime can be decided (should be 1000, error somewhere else!)
 	}
 
 	public int getParticlesPerSecond() {
@@ -198,6 +210,8 @@ public class ParticleCluster extends PhysicsObject {
 
 	public void setParticlesPerSecond(int particlesPerSecond) {
 		this.particlesPerSecond = particlesPerSecond;
+		particlesPerUpdate =  (float) particlesPerSecond /MainFrame.FPS;
+		lifetime = (particleLimit/particlesPerSecond)*100;  //Consider making this a parameter, so particle lifetime can be decided (should be 1000, error somewhere else!)
 	}
 
 	public double getLifetime() {
@@ -227,7 +241,25 @@ public class ParticleCluster extends PhysicsObject {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	public int getStartX() {
+		return startX;
+	}
+
+	public void setStartX(int startX) {
+		this.startX = startX;
+	}
+
+	public int getStartY() {
+		return startY;
+	}
+
+	public void setStartY(int startY) {
+		this.startY = startY;
+	}
 	
-	
+	public void setLineSpray(boolean lineSpray) {
+		this.lineSpray = lineSpray;
+	}
 	
 }

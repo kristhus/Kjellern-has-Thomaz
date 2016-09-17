@@ -6,14 +6,18 @@ import graphics.MainFrame;
 
 public class Updater {
 
+	public static double actualFPS;
+	
 	public void calculateFPS() { 
 		double beginTime; //Time when the cycle begins
         double timeDiff = 0;  // Time it took for the cycle to execute
         int sleepTime = 0; // ms to sleep (<0 if we're behind)
         int framesSkipped; //Number of frames being skipped
-		
+        
 		boolean isRunning = true;
 		while(isRunning) {
+			if(MainFrame.keyHandler.pDown)
+				continue;
 			try {
 				beginTime = System.nanoTime()*Math.pow(10,-6);
 				framesSkipped = 0;
@@ -48,6 +52,7 @@ public class Updater {
                         framesSkipped++;
 					}
 					// Current FPS
+					actualFPS = 1/(System.nanoTime()*Math.pow(10,-6) - beginTime)*1000;
 //					System.out.println(1/(System.nanoTime()*Math.pow(10,-6) - beginTime)*1000 + " Frames Per second");
 			} finally {
 				

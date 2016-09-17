@@ -30,6 +30,7 @@ import javax.swing.SpringLayout;
 
 import shapeCreator.CreatorCanvas;
 import particleEngine.ColorChooser;
+import letterTone.PreProcessedPanel;
 import moveable.GameObject;
 import moveable.MoveCanvas;
 import moveable.Player;
@@ -123,6 +124,10 @@ public class RightPanel extends JInternalFrame{
 		case "create":
 			internalPane.add(new CreatorCanvas());
 			drawableComponents = true;
+			break;
+		case "letterTone":
+			System.out.println("Test");
+			internalPane.add(new PreProcessedPanel());
 			break;
 			
 		}

@@ -42,7 +42,7 @@ public class MainFrame extends JFrame{
 	private static final boolean DEV_MODE = true;
 	private static boolean DEV_MODE_INITIALIZED = false;
 	private static KeyBoardListener keyBoardListener;
-	public static final int FPS = 30;
+	public static final int FPS = 60;
 	
 	public static LeftPanel leftPanel;
 	public static RightPanel rightPanel;

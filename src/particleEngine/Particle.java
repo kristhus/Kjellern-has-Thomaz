@@ -49,6 +49,8 @@ public class Particle extends PhysicsObject{
 	private int currentTheme;
 	
 		public Particle(int width, int height, ImageIcon sprite, Color c, int x, int y, boolean randomDirection) {
+//			currentTheme = FLAME;
+//			setThemeColor(FLAME);
 //			setBounciness(0);
 			setWidth(width);
 			setHeight(height);
@@ -138,9 +140,68 @@ public class Particle extends PhysicsObject{
 			double constant = speedVect/(Math.pow(tmpVx,2) + (Math.pow(tmpVy,2)));
 			setVelocityX(tmpVx*constant*randomDec1);
 			setVelocityY(tmpVy*constant*randomDec1);
+		}
+		
+		/** Initialize particle with starting point and direction according to a line spray (Directional Spray)
+		 * 
+		 * @param width
+		 * @param height
+		 * @param sprite image
+		 * @param c Color
+		 * @param x start of line x
+		 * @param y start of line y
+		 * @param speed length of line modified
+		 * @param dir start and end points
+		 */
+		public Particle(int width, int height, ImageIcon sprite, Color c, int x, int y, double speed, ArrayList<Point> dir) {
+			this(width, height, sprite, c, x, y, false);
 			
-//			currentTheme = OCEAN;
-//			setThemeColor(currentTheme);
+			
+			Random rand = new Random();
+			//int rY = rand.nextInt(Math.max(dir.get(0).y, dir.get(1).y) - Math.min(dir.get(0).y, dir.get(1).y) +1) + Math.min(dir.get(0).y, dir.get(1).y);
+			
+			double X0 = dir.get(1).x - dir.get(0).x; // Need to move the x towards 0
+			double Y0 = dir.get(1).y - dir.get(0).y;
+			if(X0 == 0 && Y0 == 0) {
+				// Just a placeholder to skip the next steps
+			}
+			else if(X0 == 0) {
+				int rY = rand.nextInt(Math.max(dir.get(0).y, dir.get(1).y) - Math.min(dir.get(0).y, dir.get(1).y) +1) + Math.min(dir.get(0).y, dir.get(1).y);
+				setY(rY);
+			}else if(Y0 == 0) {
+				int rX = rand.nextInt(Math.max(dir.get(0).x, dir.get(1).x) - Math.min(dir.get(0).x, dir.get(1).x) +1) + Math.min(dir.get(0).x, dir.get(1).x);
+				setX(rX);
+			}
+			else if(Math.abs(X0) < Math.abs(Y0)) { // f(x)
+				int rX = rand.nextInt(Math.max(dir.get(0).x, dir.get(1).x) - Math.min(dir.get(0).x, dir.get(1).x) +1) + Math.min(dir.get(0).x, dir.get(1).x);
+				double rY = (X0 - (dir.get(1).x - rX))*((dir.get(1).y - dir.get(0).y) / (dir.get(1).x - dir.get(0).x) ) + dir.get(0).y; // f(x) = ax + b, a = p1-p2
+				setX(rX);
+				setY(rY);
+			}else { // f(y)
+				int rY = rand.nextInt(Math.max(dir.get(0).y, dir.get(1).y) - Math.min(dir.get(0).y, dir.get(1).y) +1) + Math.min(dir.get(0).y, dir.get(1).y);
+				double rX = (Y0 - (dir.get(1).y - rY))*((dir.get(1).x - dir.get(0).x) / (dir.get(1).y - dir.get(0).y) ) + dir.get(0).x; // f(x) = ax + b, a = p1-p2
+				setX(rX);
+				setY(rY);
+			}
+			
+//			int dirX = rX+(dir.get(1).x - x);
+//			int dirY = rY+(dir.get(1).y - y);
+			
+			double vx = Math.abs(dir.get(0).x-dir.get(1).x);
+			double vy = Math.abs(dir.get(0).y-dir.get(1).y);
+			double length = Math.sqrt(  Math.pow(vx, 2) + Math.pow(vy, 2)     );
+			
+			double angle = Math.toDegrees(Math.atan2(dir.get(1).y-dir.get(0).y, dir.get(1).x - dir.get(0).x));
+			double tmpVx = Math.cos(angle)*vx + vy*Math.sin(angle);
+			double tmpVy = -Math.sin(angle)*vx + Math.cos(angle)*vy;
+			
+			// Scale velocities towards speed
+			double speedVect = Math.sqrt(speed*speed);
+			double constant = speedVect/(Math.pow(tmpVx,2) + (Math.pow(tmpVy,2)));
+			
+			setVelocityX(tmpVx*constant);
+			setVelocityY(tmpVy*constant);
+			
 		}
 		
 		public Particle(int width, int height, ImageIcon sprite, Color c, int x, int y, boolean randomDirection, int currentTheme) {
@@ -206,6 +267,7 @@ public class Particle extends PhysicsObject{
 		
 		
 		public void update(double dt){ //Update with regards to gravity if such a thing exists
+			
 			updateTheme();
 			if(isGravity() && getVelocityY() <= EnvironmentConstants.TERMINAL_VELOCITY) {
 				updateSpeed(dt);

@@ -14,6 +14,7 @@ import java.util.Vector;
 
 import moveable.Collidable;
 import constants.EnvironmentConstants;
+import data.Updater;
 
 public abstract class PhysicsObject implements Collidable{ //TODO: Try to implement some type of shape/abstract
 	
@@ -30,6 +31,10 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 	private double width;
 	private double height;
 	private Color color;
+	
+	private boolean mouseMove;
+	
+	private boolean colliding; // To fix update of speed when colliding with another object. (speed updates regardless)
 	
 	private ArrayList<PhysicsObject> attached = new ArrayList<PhysicsObject>();
 	private PhysicsObject attachedTo;
@@ -104,12 +109,26 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 	}
 	
 	public void updatePosition(double dt) {// dependant on speed
-		x += velocityX*30/MainFrame.FPS;//*dt;
-		y += velocityY*30/MainFrame.FPS;//*dt;
+		if(colliding) return;
+		if(attachedTo != null) {
+			x += attachedTo.getVelocityX()*30/MainFrame.updater.actualFPS;
+			y += attachedTo.getVelocityY()*30/MainFrame.updater.actualFPS;
+		}else {
+			x += velocityX*(30/Updater.actualFPS) + Math.pow(30/Updater.actualFPS, 2)*getDvX()/2;
+			y += velocityY*(30/Updater.actualFPS) + Math.pow(30/Updater.actualFPS, 2)*getDvY()/2;
+//			x += velocityX*30/MainFrame.updater.actualFPS;//*dt; // NOTE: I made the program in regards to 30 FPS, which is why it must be accounted for here, if fps != 30
+//			y += velocityY*30/MainFrame.updater.actualFPS;//*dt;
+		}
 	}
-	public void updateSpeed(double dt) { // dependant on acceleration
-		velocityX += dvX*30/MainFrame.FPS;//*dt;
-		velocityY += dvY*30/MainFrame.FPS;//*dt;
+	public void updateSpeed(double dt) { 
+		if(colliding) return;
+		if(attachedTo != null) {
+			velocityX += attachedTo.getDvX()*30/MainFrame.updater.actualFPS;//*dt;
+			velocityY += attachedTo.getDvY()*30/MainFrame.updater.actualFPS;//*dt;
+		}else {
+			velocityX += dvX*30/MainFrame.updater.actualFPS;//*dt;
+			velocityY += dvY*30/MainFrame.updater.actualFPS;//*dt;
+		}
 	}
 	public void updateAcceleration(double dt) { // dependant on Forces
 		
@@ -117,24 +136,113 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 	
 	public void elasticCollision(PhysicsObject obj) {
 		
-			double vX1 = velocityX* (weight-obj.getWeight() / (weight+obj.getWeight())) + obj.getVelocityX()*(2*obj.getWeight())/(getWeight()+obj.getWeight());
-			double vY1 = velocityY* (weight-obj.getWeight() / (weight+obj.getWeight())) + obj.getVelocityY()*(2*obj.getWeight())/(getWeight()+obj.getWeight());;
-			// Target at rest:   u2 = 2*m1*v1/(m1+m2)
-			double vX2 = 2*getWeight()*velocityX/(getWeight() + obj.getWeight()) - obj.getVelocityX()*(obj.getWeight()-getWeight())/(getWeight() + obj.getWeight());
-			double vY2 = 2*getWeight()*velocityY/(getWeight() + obj.getWeight()) - obj.getVelocityY()*(obj.getWeight()-getWeight())/(getWeight() + obj.getWeight());;
+		// A 'static' object isn't a physical phenomenon, but a simple representation of an object with an 'infinite' amount bigger mass
+		// than the colliding object, neglecting the impact the nonstatic object will have on the static one. 
+		// Setting a dummy weight big enough, will disregard this. (It is important it is high enough to remove any impact)
+		double dummyWeight = weight;
+		double objDummyWeight = obj.getWeight();
+		if(isStatic()) 
+			dummyWeight = 1000*weight; // Meh, this is accurate enough for now.
+		else if(obj.isStatic())
+			objDummyWeight = (obj.getWeight()*1000);
 			
+		
+		double vX1 = velocityX* (dummyWeight-objDummyWeight / (dummyWeight+objDummyWeight)) + obj.getVelocityX()*(2*objDummyWeight)/(dummyWeight+objDummyWeight);
+		double vY1 = velocityY* (dummyWeight-objDummyWeight / (dummyWeight+objDummyWeight)) + obj.getVelocityY()*(2*objDummyWeight)/(dummyWeight+objDummyWeight);;
+		// Target at rest:   u2 = 2*m1*v1/(m1+m2)
+		double vX2 = 2*dummyWeight*velocityX/(dummyWeight + objDummyWeight) - obj.getVelocityX()*(objDummyWeight-dummyWeight)/(dummyWeight + objDummyWeight);
+		double vY2 = 2*dummyWeight*velocityY/(dummyWeight + objDummyWeight) - obj.getVelocityY()*(objDummyWeight-dummyWeight)/(dummyWeight + objDummyWeight);;
+		
+		// GOD F*KING DAMN IT , due to axis being fucking shit in programming, i have to reverse direction in certain situations:
+		double angle = Math.toDegrees(Math.atan2(getY()-(obj.getY()+obj.getWidth()/2), getX() - (obj.getX()+obj.getWidth()/2)));
+//		if(angle < 45.4 && angle > 44.6) {
+//			System.out.println("Weight: " + dummyWeight +
+//					"\nObjDummyWeight: " + objDummyWeight +
+//					"\nvX1: " + velocityX + 
+//					"\nvY1: " + velocityY +
+//					"\nAngle: " + angle);
+//		}
+		if(angle <= 45 && angle >= -45){
+			vY1 *= -1;
+		}if(angle >45 && angle <= 135){
+			vX1*=-1;
+		}if((angle >=135 && angle < 180) || (angle <-135 && angle >=-180)){
+			vY1*=-1;
+		}if(angle <-45 && angle >=-135)
+			vX1*=-1;
+		
+		double tpu = 1/MainFrame.updater.actualFPS; // Time per update (actual) for previous upd.
+		
+		
+//		setX(  (intersection.x - x) + getVelocityX()*timeTakeni + getDvX()*Math.pow(timeTakeni,2)/2     );
+//		setY(  (intersection.y - y) + getVelocityY()*timeTakeni + getDvY()*Math.pow(timeTakeni,2)/2     );
+		
+//		if(obj.isStatic()){
+//			setX(intersection.x);
+//			setY(intersection.y);
+//		}
+		
 				if(!isStatic()) {
+					setVelocityX(vX1 * (getBounciness() + obj.getBounciness())/2);
 					setVelocityY(vY1 * (getBounciness() + obj.getBounciness())/2); 
-					setVelocityX(-vX1 * (getBounciness() + obj.getBounciness())/2);
 				}
-				if(!obj.isStatic) {
+				if(!obj.isStatic()) {
 					obj.setVelocityX(vX2 * (getBounciness() + obj.getBounciness())/2);
 					obj.setVelocityY(vY2 * (getBounciness() + obj.getBounciness())/2);
 				}
 		
+				Point intersection = pointOfIntersection(obj, getNextVelocityY());
+				double di = Math.sqrt(Math.pow(intersection.x - getX(), 2) + Math.pow(intersection.y-getY(), 2));
+				double timeTakeni = Math.max( Math.abs(2*di/(getVelocityX() + getNextVelocityX())), Math.abs(2*di/(getVelocityY() + getNextVelocityY())))/1000;
+				
+				double timeLeftThisUpdate = tpu-timeTakeni;
+				
+				
+				x += (timeLeftThisUpdate/tpu)*velocityX*(30/Updater.actualFPS) + Math.pow(30/Updater.actualFPS, 2)*getDvX()/2;
+				y += (timeLeftThisUpdate/tpu)*velocityY*(30/Updater.actualFPS) + Math.pow(30/Updater.actualFPS, 2)*getDvY()/2;
 				
 	}
 	
+	public Point pointOfIntersection(PhysicsObject obj, double yModifier) {
+		Point.Float thisPoint = new Point.Float((float) (getX()), (float) (getY()));
+		for(Point.Float p : getPointsInBounds()) {
+			if(distFromPointToRect(obj.getBoundsFloat(), p) < distFromPointToRect(obj.getBoundsFloat(), thisPoint)) {
+				thisPoint = p;
+			}
+		}
+		Point.Float thisTowards = getNextPosition(thisPoint.getX(), thisPoint.getY(), getVelocityX(), getVelocityY() + yModifier);
+		Point.Float A = new Point.Float((float) obj.getX(), (float) obj.getY());
+		Point.Float B = new Point.Float((float)(obj.getX() + obj.getWidth()), (float) obj.getY());
+		Point.Float C = new Point.Float((float) obj.getX(), (float)(obj.getY() + obj.getHeight()));
+		Point.Float D = new Point.Float((float)(obj.getX() + obj.getWidth()), (float)(obj.getY() + obj.getHeight()));
+		ArrayList<Point.Float> edges = new ArrayList<Point.Float>();
+		edges.add(A);edges.add(B);edges.add(C);edges.add(D);
+		Double minDist = thisPoint.distance(A);
+		Point.Float edgeA = A;
+		for(Point.Float p : edges) {
+			if(thisPoint.distance(p) < minDist) {
+				edgeA = p;
+			}
+		}
+		edges.remove(edgeA);
+		Point.Float edgeB = edges.get(0);
+		LineInPlane thisLine = new LineInPlane(thisPoint, thisTowards);
+		for(Point.Float p : edges) {
+			LineInPlane pLine = new LineInPlane(thisPoint, p);
+			if(thisLine.intersectsLine(pLine)) {
+				if(p.distance(thisPoint) < edgeB.distance(thisPoint))
+					edgeB = p;
+			}
+		}
+		if(edgeA.x+edgeA.y > edgeB.x+edgeB.y) {
+			Point.Float tmp = edgeA;
+			edgeA = edgeB;
+			edgeB = tmp;
+		}
+		LineInPlane objectLine = new LineInPlane(edgeA, edgeB);	
+		LineInPlane intersectionLine = new LineInPlane(thisPoint, thisTowards);	
+		return findIntersectedPoint(objectLine, intersectionLine);
+	}
 	
 	public void collide(PhysicsObject obj, double yModifier) { //TODO: Should have a shape of some sorts, and this method should be remade in regards to that
 		//TODO: velocity is the vector to be used to figure out if 
@@ -312,13 +420,15 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 		return velocityX;
 	}
 	public void setVelocityX(double velocityX) {
-		this.velocityX = velocityX;
+//		if(!isStatic)
+			this.velocityX = velocityX;
 	}
 	public double getVelocityY() {
 		return velocityY;
 	}
 	public void setVelocityY(double velocityY) {
-		this.velocityY = velocityY;
+//		if(!isStatic)
+			this.velocityY = velocityY;
 	}
 	public double getWidth() {
 		return width;
@@ -376,19 +486,21 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 	}
 	
 	public double getNextVelocityY() {
-		/*
-		double buoyancyY = getBuoyancyForce(EnvironmentConstants.AIR_DENSITY)/100;
-		if(getVelocityY() > 0) {
-			buoyancyY = Math.abs(buoyancyY)*-1;
-		}
-		System.out.println(buoyancyY);
-		*/
-		return getVelocityY()+EnvironmentConstants.GRAVITY/10 ;
+		return getVelocityY()+getDvY() ;
+	}
+	public double getNextVelocityX() {
+		return getVelocityX() + getDvX();
 	}
 	
 	public boolean willCollide(PhysicsObject obj, double speedModifier1, double speedModifier2){
-		Point2D.Float p1 = getNextPosition(x, y, getVelocityX(), getVelocityY() + speedModifier1);
-		Point2D.Float p2 = getNextPosition(obj.getX(), obj.getY(),obj.getVelocityX(), obj.getVelocityY() + speedModifier2);
+		colliding = false;
+		Point2D.Float p1 = getNextPosition(x, y, getVelocityX(), getVelocityY());
+		double p2y;
+		if(obj.isStatic()){
+			p2y = 0;
+		}else
+			p2y = obj.getVelocityY() + speedModifier2;
+		Point2D.Float p2 = getNextPosition(obj.getX(), obj.getY(),obj.getVelocityX(), p2y);
 		
 		
 		Rectangle2D.Float r1 = new Rectangle2D.Float();
@@ -396,23 +508,44 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 		Rectangle2D.Float r2 = new Rectangle2D.Float();
 		r2.setRect(p2.getX(), p2.getY(), obj.getWidth(), obj.getHeight());
 		
-		int epsilon = 10; // number of steps to take
-		double incrementX = (p1.getX()-x)/epsilon;
-		double incrementY = (p1.getY()-y)/epsilon;
+		float nx = p1.x;
+		float ny = p1.y;
+		
 		Rectangle2D.Float rn = new Rectangle2D.Float();
 		rn.setRect(x, y, width, height);
-		for(double i = 0; i <= 1; i+=0.1) { // 0.1 is the step to lower margin of error. splits the path towards next point into ten points and checks.
-			rn.x = (float) x;
-			rn.y = (float) y;
-			
-			rn.x += getVelocityX()*i;
-			rn.y += getVelocityY()*i;
-			if(rn.intersects(r2))
-				return true;
+		
+		for(double i = 0.1; i <= 1; i+=0.1) { // 0.1 is the step to lower margin of error. splits the path towards next point into ten points and checks.
+			rn.x = (float) (x+((p1.x-x)*i));
+			rn.y = (float) (y+((p1.y-y)*i));
+			if(rn.intersects(r2)) {
+				colliding = true;
+				return colliding;
+			}
 		}
-		return false;
+		return colliding;
+		
+//		if(r1.intersects(r2)) {
+//			colliding = true;
+//			return colliding;
+//		}
+//		return false;
 		
 //		return r1.intersects(r2);
+	}
+	
+	public void kinematicDisplacement(double dt) { // d = vo • t + 0.5 • a • t^2
+		setX(getVelocityX()+0.5*getDvX()*Math.pow(dt,2));
+		setY(getVelocityY()+0.5*getDvY()*Math.pow(dt,2));
+	}
+	public void accelerationlessKinematicDisplacement(double dt) { // d = (v0 + vf)/ 2 • t
+		setX(dt*(getVelocityX() + getNextVelocityY())/2);
+		setY(dt*(getVelocityY() + getNextVelocityY())/2);
+	}
+	
+	public boolean pointIntersect(float tmpX, float tmpY, Rectangle2D re) {
+		if( (tmpX > re.getX() && tmpX < re.getX()+re.getWidth())  &&  (tmpY > re.getY() && tmpY < re.getY()+re.getHeight()))
+			return true;
+		return false;
 	}
 	
 	public boolean goesOutOfBounds(Rectangle bounds) {
@@ -474,6 +607,7 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 	public void attach(PhysicsObject obj) {
 		if(attached.contains(obj)) return; // C
 		obj.cloneWith(this, true);
+		obj.setAttachedTo(this);
 		attached.add(obj);
 	} 
 	/**
@@ -528,6 +662,30 @@ public abstract class PhysicsObject implements Collidable{ //TODO: Try to implem
 
 	public void setDvY(double dvY) {
 		this.dvY = dvY;
+	}
+
+	public ArrayList<PhysicsObject> getAttached() {
+		return attached;
+	}
+
+	public void setAttached(ArrayList<PhysicsObject> attached) {
+		this.attached = attached;
+	}
+
+	public PhysicsObject getAttachedTo() {
+		return attachedTo;
+	}
+
+	public void setAttachedTo(PhysicsObject attachedTo) {
+		this.attachedTo = attachedTo;
+	}
+
+	public boolean isMouseMove() {
+		return mouseMove;
+	}
+
+	public void setMouseMove(boolean mouseMove) {
+		this.mouseMove = mouseMove;
 	}
 	
 	

@@ -7,7 +7,10 @@ public class KeyHandler implements KeyListener {
 	
 	public boolean ctrlDown;
 	public boolean hDown;
+	public boolean bDown;
+	public boolean zDown;
 	
+	public boolean pDown;
 	
 	
 	@Override
@@ -36,6 +39,16 @@ public class KeyHandler implements KeyListener {
 		switch(Character.toUpperCase(arg0.getKeyChar())) {
 			case 'H':
 				hDown = !hDown;
+				break;
+			case 'B':
+				bDown= !bDown;
+				break;
+			case 'Z':
+				zDown = !zDown;
+				break;
+			case 'P':
+				pDown = !pDown;
+				break;
 		}
 	}
 	

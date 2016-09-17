@@ -39,6 +39,10 @@ public class CanvasMouseHandler implements MouseMotionListener, MouseListener {
 		// TODO Auto-generated method stub
 		doubleClick = arg0.getClickCount()%2 == 0;
 		mousePosition = arg0.getPoint();
+		if(MainFrame.keyHandler.zDown){
+			mousePosition.x/=4;
+			mousePosition.y/=4;
+		}
 	}
 
 	@Override
@@ -79,6 +83,10 @@ public class CanvasMouseHandler implements MouseMotionListener, MouseListener {
 			break;
 		}
 		mousePosition = arg0.getPoint();
+		if(MainFrame.keyHandler.zDown){
+			mousePosition.x/=4;
+			mousePosition.y/=4;
+		}
 		JComponent c = (JComponent) arg0.getSource();
 //		releasedAt = new Point(c.getLocation())
 	}
@@ -87,6 +95,10 @@ public class CanvasMouseHandler implements MouseMotionListener, MouseListener {
 	public void mouseDragged(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		mousePosition = arg0.getPoint();
+		if(MainFrame.keyHandler.zDown){
+			mousePosition.x/=4;
+			mousePosition.y/=4;
+		}
 		
 	}
 
@@ -94,6 +106,10 @@ public class CanvasMouseHandler implements MouseMotionListener, MouseListener {
 	public void mouseMoved(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		mousePosition = arg0.getPoint();
+		if(MainFrame.keyHandler.zDown){
+			mousePosition.x/=4;
+			mousePosition.y/=4;
+		}
 	}
 	
 	
